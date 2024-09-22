@@ -113,7 +113,6 @@ int main(){
   // Verify results
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
   for (int i = 0; i < DSIZE*DSIZE; i++) if (h_C[i] != A_val*B_val*DSIZE) {printf("mismatch at index %d, was: %f, should be: %f\n", i, h_C[i], A_val*B_val*DSIZE); return -1;}
-  printf("Success!\n"); 
+  printf("Success!\n");
   return 0;
 }
-  

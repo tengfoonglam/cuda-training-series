@@ -117,4 +117,3 @@ int main(){
   printf("thrust time: %fms\n", et);
   return 0;
 }
-

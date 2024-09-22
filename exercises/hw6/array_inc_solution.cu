@@ -41,8 +41,8 @@ int main(){
   cudaMemPrefetchAsync(h_array, ds*sizeof(h_array[0]), cudaCpuDeviceId); // add in step 2c
   cudaDeviceSynchronize();
   cudaCheckErrors("kernel execution error");
-  for (int i = 0; i < ds; i++) 
+  for (int i = 0; i < ds; i++)
     if (h_array[i] != 1) {printf("mismatch at %d, was: %d, expected: %d\n", i, h_array[i], 1); return -1;}
-  printf("success!\n"); 
+  printf("success!\n");
   return 0;
 }

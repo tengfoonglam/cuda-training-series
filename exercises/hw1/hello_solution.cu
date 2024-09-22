@@ -9,4 +9,3 @@ int main(){
   hello<<<2,2>>>();
   cudaDeviceSynchronize();
 }
-

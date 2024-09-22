@@ -42,8 +42,8 @@ int main(){
   cudaCheckErrors("kernel launch error");
   cudaMemcpy(h_array, d_array, ds*sizeof(h_array[0]), cudaMemcpyDeviceToHost);
   cudaCheckErrors("kernel execution or cudaMemcpy D->H Error");
-  for (int i = 0; i < ds; i++) 
+  for (int i = 0; i < ds; i++)
     if (h_array[i] != 1) {printf("mismatch at %d, was: %d, expected: %d\n", i, h_array[i], 1); return -1;}
-  printf("success!\n"); 
+  printf("success!\n");
   return 0;
 }

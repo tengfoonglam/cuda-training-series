@@ -25,7 +25,7 @@ __global__ void reduce(float *gdata, float *out, size_t n){
 
      while (idx < n) {  // grid stride loop to load data
         sdata[tid] += gdata[idx];
-        idx += gridDim.x*blockDim.x;  
+        idx += gridDim.x*blockDim.x;
         }
 
      for (unsigned int s=blockDim.x/2; s>0; s>>=1) {

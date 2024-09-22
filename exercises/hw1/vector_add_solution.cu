@@ -53,4 +53,3 @@ int main(){
   printf("C[0] = %f\n", h_C[0]);
   return 0;
 }
-  

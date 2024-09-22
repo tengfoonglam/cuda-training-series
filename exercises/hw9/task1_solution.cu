@@ -2,7 +2,7 @@
 #include <stdio.h>
 using namespace cooperative_groups;
 const int nTPB = 256;
-__device__ int reduce(thread_group g, int *x, int val) { 
+__device__ int reduce(thread_group g, int *x, int val) {
   int lane = g.thread_rank();
   for (int i = g.size()/2; i > 0; i /= 2) {
     x[lane] = val;       g.sync();
@@ -38,4 +38,3 @@ int main(){
   cudaError_t err = cudaDeviceSynchronize();
   if (err != cudaSuccess) printf("cuda error: %s\n", cudaGetErrorString(err));
 }
-

@@ -20,13 +20,13 @@
 #ifdef DEBUG
 #define CUDA_CALL(F)  if( (F) != cudaSuccess ) \
   {printf("Error %s at %s:%d\n", cudaGetErrorString(cudaGetLastError()), \
-   __FILE__,__LINE__); exit(-1);} 
+   __FILE__,__LINE__); exit(-1);}
 #define CUDA_CHECK()  if( (cudaPeekAtLastError()) != cudaSuccess ) \
   {printf("Error %s at %s:%d\n", cudaGetErrorString(cudaGetLastError()), \
-   __FILE__,__LINE__-1); exit(-1);} 
+   __FILE__,__LINE__-1); exit(-1);}
 #else
 #define CUDA_CALL(F) (F)
-#define CUDA_CHECK() 
+#define CUDA_CHECK()
 #endif
 
 /* definitions of threadblock size in X and Y directions */
@@ -44,15 +44,15 @@
 
 /* CUDA kernel for shared memory matrix transpose */
 
-__global__ void smem_cuda_transpose( const int m, 
-                                     double const * const a, 
+__global__ void smem_cuda_transpose( const int m,
+                                     double const * const a,
                                      double * const c )
 {
-	
+
 /* declare a shared memory array */
 
   __shared__ double smemArray[FIXME][FIXME];
-	
+
 /* determine my row and column indices for the error checking code */
 
   const int myRow = blockDim.x * blockIdx.x + threadIdx.x;
@@ -70,17 +70,17 @@ __global__ void smem_cuda_transpose( const int m,
 /* your INDX calculation for both a[] and c[].  This will ensure proper */
 /* coalescing. */
 
-   smemArray[FIXME][FIXME] = 
+   smemArray[FIXME][FIXME] =
       a[FIXME];
   } /* end if */
 
 /* synchronize */
   __syncthreads();
-		
+
   if( myRow < m && myCol < m )
   {
 /* write the result */
-    c[FIXME] = 
+    c[FIXME] =
            smemArray[FIXME][FIXME];
   } /* end if */
   return;
@@ -89,11 +89,11 @@ __global__ void smem_cuda_transpose( const int m,
 
 void host_transpose( const int m, double const * const a, double * const c )
 {
-	
-/* 
+
+/*
  *  naive matrix transpose goes here.
  */
- 
+
   for( int j = 0; j < m; j++ )
   {
     for( int i = 0; i < m; i++ )
@@ -115,7 +115,7 @@ int main( int argc, char *argv[] )
 
   double *h_a, *h_c;
   double *d_a, *d_c;
- 
+
   size_t numbytes = (size_t) size * (size_t) size * sizeof( double );
 
 /* allocating host memory */
@@ -144,7 +144,7 @@ int main( int argc, char *argv[] )
   memset( h_c, 0, numbytes );
   CUDA_CALL( cudaMemset( d_c, 0, numbytes ) );
 
-  fprintf( stdout, "Total memory required per matrix is %lf MB\n", 
+  fprintf( stdout, "Total memory required per matrix is %lf MB\n",
      (double) numbytes / 1000000.0 );
 
 /* initialize input matrix with random value */
@@ -179,14 +179,14 @@ int main( int argc, char *argv[] )
 /* print CPU timing information */
 
   fprintf(stdout, "Total time CPU is %f sec\n", elapsedTime / 1000.0f );
-  fprintf(stdout, "Performance is %f GB/s\n", 
-    8.0 * 2.0 * (double) size * (double) size / 
+  fprintf(stdout, "Performance is %f GB/s\n",
+    8.0 * 2.0 * (double) size * (double) size /
     ( (double) elapsedTime / 1000.0 ) * 1.e-9 );
 
 /* setup threadblock size and grid sizes */
 
   dim3 threads( THREADS_PER_BLOCK_X, THREADS_PER_BLOCK_Y, 1 );
-  dim3 blocks( ( size / THREADS_PER_BLOCK_X ) + 1, 
+  dim3 blocks( ( size / THREADS_PER_BLOCK_X ) + 1,
                ( size / THREADS_PER_BLOCK_Y ) + 1, 1 );
 
 /* start timers */
@@ -207,8 +207,8 @@ int main( int argc, char *argv[] )
 /* print GPU timing information */
 
   fprintf(stdout, "Total time GPU is %f sec\n", elapsedTime / 1000.0f );
-  fprintf(stdout, "Performance is %f GB/s\n", 
-    8.0 * 2.0 * (double) size * (double) size / 
+  fprintf(stdout, "Performance is %f GB/s\n",
+    8.0 * 2.0 * (double) size * (double) size /
     ( (double) elapsedTime / 1000.0 ) * 1.e-9 );
 
 /* copy data from device to host */
@@ -222,7 +222,7 @@ int main( int argc, char *argv[] )
   {
     for( int i = 0; i < size; i++ )
     {
-      if( h_c[INDX(i,j,size)] != h_a[INDX(i,j,size)] ) 
+      if( h_c[INDX(i,j,size)] != h_a[INDX(i,j,size)] )
       {
         printf("Error in element %d,%d\n", i,j );
         printf("Host %f, device %f\n",h_c[INDX(i,j,size)],

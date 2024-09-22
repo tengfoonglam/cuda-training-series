@@ -62,7 +62,7 @@ int main(){
   cudaMemcpy(h_sums, d_sums, DSIZE*sizeof(float), cudaMemcpyDeviceToHost);
   //cuda processing sequence step 3 is complete
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
-  if (!validate(h_sums, DSIZE)) return -1; 
+  if (!validate(h_sums, DSIZE)) return -1;
   printf("row sums correct!\n");
   cudaMemset(d_sums, 0, DSIZE*sizeof(float));
   column_sums<<<(DSIZE+block_size-1)/block_size, block_size>>>(d_A, d_sums, DSIZE);
@@ -72,8 +72,7 @@ int main(){
   cudaMemcpy(h_sums, d_sums, DSIZE*sizeof(float), cudaMemcpyDeviceToHost);
   //cuda processing sequence step 3 is complete
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
-  if (!validate(h_sums, DSIZE)) return -1; 
+  if (!validate(h_sums, DSIZE)) return -1;
   printf("column sums correct!\n");
   return 0;
 }
-  

@@ -21,7 +21,7 @@ __global__ void estimate_sum_ahs(size_t length, T *sum){
   for (int i = blockDim.x>>1; i > 0; i >>= 1){
     __syncthreads();
     if (threadIdx.x < i) smem[threadIdx.x] += smem[threadIdx.x+i];}
-    
+
   if (threadIdx.x == 0) atomicAdd(sum, smem[0]);
 }
 

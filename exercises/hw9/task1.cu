@@ -2,7 +2,7 @@
 #include <stdio.h>
 using namespace cooperative_groups;
 const int nTPB = 256;
-__device__ int reduce(thread_group g, int *x, int val) { 
+__device__ int reduce(thread_group g, int *x, int val) {
   int lane = g.thread_rank();
   for (int i = g.size()/2; i > 0; i /= 2) {
     x[lane] = val;       g.sync();
@@ -19,7 +19,7 @@ __global__ void my_reduce_kernel(int *data){
   auto g1 = FIXME
   size_t gindex = g1.group_index().x * nTPB + g1.thread_index().x;
   // task 1b: uncomment and create a proper 32-thread tile below, using group g1 created above
-  // auto g2 = FIXME 
+  // auto g2 = FIXME
   // task 1c: uncomment and create a proper 16-thread tile below, using group g2 created above
   // auto g3 = FIXME
   // for each task, adjust the group to point to the last group created above
@@ -38,4 +38,3 @@ int main(){
   cudaError_t err = cudaDeviceSynchronize();
   if (err != cudaSuccess) printf("cuda error: %s\n", cudaGetErrorString(err));
 }
-
