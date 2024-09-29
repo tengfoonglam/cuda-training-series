@@ -6,7 +6,7 @@ if (POLICY CMP0104)
     cmake_policy(SET CMP0104 OLD)
 endif()
 
-foreach(example_name hello vector_add)
+foreach(example_name hello vector_add matrix_mul)
     add_executable("${example_name}_solution" "${example_name}_solution.cu")
     add_executable("${example_name}" "${example_name}_solution.cu")
 endforeach()

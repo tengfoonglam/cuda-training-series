@@ -23,14 +23,16 @@ const float B_val = 2.0f;
 // matrix multiply (naive) kernel: C = A * B
 __global__ void mmul(const float *A, const float *B, float *C, int ds) {
 
-  int idx = threadIdx.x + blockDim.x * blockIdx.x; // create thread x index
-  int idy = threadIdx.y + blockDim.y * blockIdx.y; // create thread y index
+  const int idx =
+      threadIdx.x + blockDim.x * blockIdx.x; // create thread x index
+  const int idy =
+      threadIdx.y + blockDim.y * blockIdx.y; // create thread y index
 
   if ((idx < ds) && (idy < ds)) {
     float temp = 0;
     for (int i = 0; i < ds; i++)
-      temp += A[FIXME * ds + i] *
-              B[i * ds + FIXME]; // dot product of row and column
+      temp +=
+          A[idy * ds + i] * B[i * ds + idx]; // dot product of row and column
     C[idy * ds + idx] = temp;
   }
 }
