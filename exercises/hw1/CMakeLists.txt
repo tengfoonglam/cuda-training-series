@@ -7,3 +7,4 @@ if (POLICY CMP0104)
 endif()
 
 add_executable(hello_solution hello_solution.cu)
+add_executable(hello hello.cu)
