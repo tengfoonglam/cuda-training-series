@@ -12,7 +12,7 @@ For your first task, change into the *task1* directory. There you should edit th
  - Using indexing macro:
 
 ```cpp
-#define INDX( row, col, ld ) ( ( (row) * (ld) ) + (col) ) 
+#define INDX( row, col, ld ) ( ( (row) * (ld) ) + (col) )
 ld = leading dimension (width)
 ```
 
@@ -76,7 +76,7 @@ Here's a breakdown of the metrics we are requesting from the profiler:
  - *l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_st.ratio*: The number of global store transactions per request
  - *smsp__sass_average_data_bytes_per_sector_mem_global_op_st.pct*: The global store efficiency
 
-Using these metrics, we can easily observe various characteristics of our kernel. Many of these metrics are self-explanatory, but it may not be immediately obvious how global load and store *efficiency* is calculated. We can also calculate our global load and store efficiences by dividing the theoretical minimum number of transactions per request by the actual number of transactions per request we calculated from the above metrics. 
+Using these metrics, we can easily observe various characteristics of our kernel. Many of these metrics are self-explanatory, but it may not be immediately obvious how global load and store *efficiency* is calculated. We can also calculate our global load and store efficiences by dividing the theoretical minimum number of transactions per request by the actual number of transactions per request we calculated from the above metrics.
 
 How do we know what the theoretical minimum number of transactions per request actually is? A cache line is 128 bytes, and there are 32 threads in a warp. If the 32 threads are accessing consecutive 4 byte words (i.e. single precision floats), then there should be 4 transactions in that request (we are just asking for four consecutive 32-byte sectors of DRAM). In our case, we are using double precision floats, so the 32 threads would be accessing consecutive 8 byte words (256 bytes total). Therefore, the theoretical minimum number of transactions per request in our case would be 8 (eight consecutive 32-byte sectors of DRAM).
 

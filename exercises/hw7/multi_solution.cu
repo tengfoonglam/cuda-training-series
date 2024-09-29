@@ -1,13 +1,13 @@
-#include <math.h>
 #include <iostream>
-#include <time.h>
-#include <sys/time.h>
+#include <math.h>
 #include <stdio.h>
+#include <sys/time.h>
+#include <time.h>
 
 // modifiable
 typedef float ft;
 const int chunks = 64;
-const size_t ds = 1024*1024*chunks;
+const size_t ds = 1024 * 1024 * chunks;
 const int count = 22;
 const int num_gpus = 4;
 
@@ -23,7 +23,8 @@ __device__ double gpdf(double val, double sigma) {
 }
 
 // compute average gaussian pdf value over a window around each point
-__global__ void gaussian_pdf(const ft * __restrict__ x, ft * __restrict__ y, const ft mean, const ft sigma, const int n) {
+__global__ void gaussian_pdf(const ft *__restrict__ x, ft *__restrict__ y,
+                             const ft mean, const ft sigma, const int n) {
   int idx = threadIdx.x + blockDim.x * blockIdx.x;
   if (idx < n) {
     ft in = x[idx] - (count / 2) * 0.01f;
@@ -38,16 +39,15 @@ __global__ void gaussian_pdf(const ft * __restrict__ x, ft * __restrict__ y, con
 }
 
 // error check macro
-#define cudaCheckErrors(msg) \
-  do { \
-    cudaError_t __err = cudaGetLastError(); \
-    if (__err != cudaSuccess) { \
-        fprintf(stderr, "Fatal error: %s (%s at %s:%d)\n", \
-            msg, cudaGetErrorString(__err), \
-            __FILE__, __LINE__); \
-        fprintf(stderr, "*** FAILED - ABORTING\n"); \
-        exit(1); \
-    } \
+#define cudaCheckErrors(msg)                                                   \
+  do {                                                                         \
+    cudaError_t __err = cudaGetLastError();                                    \
+    if (__err != cudaSuccess) {                                                \
+      fprintf(stderr, "Fatal error: %s (%s at %s:%d)\n", msg,                  \
+              cudaGetErrorString(__err), __FILE__, __LINE__);                  \
+      fprintf(stderr, "*** FAILED - ABORTING\n");                              \
+      exit(1);                                                                 \
+    }                                                                          \
   } while (0)
 
 // host-based timing
@@ -56,7 +56,7 @@ __global__ void gaussian_pdf(const ft * __restrict__ x, ft * __restrict__ y, con
 unsigned long long dtime_usec(unsigned long long start) {
   timeval tv;
   gettimeofday(&tv, 0);
-  return ((tv.tv_sec*USECPSEC)+tv.tv_usec)-start;
+  return ((tv.tv_sec * USECPSEC) + tv.tv_usec) - start;
 }
 
 int main() {
@@ -83,13 +83,13 @@ int main() {
 
   for (int i = 0; i < num_gpus; i++) {
     cudaSetDevice(i);
-    gaussian_pdf<<<(ds+255)/256, 256>>>(d_x[i], d_y[i], 0.0, 1.0, ds);
+    gaussian_pdf<<<(ds + 255) / 256, 256>>>(d_x[i], d_y[i], 0.0, 1.0, ds);
   }
   cudaDeviceSynchronize();
   cudaCheckErrors("execution error");
 
   et1 = dtime_usec(et1);
-  std::cout << "elapsed time: " << et1/(float)USECPSEC << std::endl;
+  std::cout << "elapsed time: " << et1 / (float)USECPSEC << std::endl;
 
   return 0;
 }

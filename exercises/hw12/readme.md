@@ -39,7 +39,7 @@ srun -C gpu -N 1 -n 1 -t 10 -A ntrain --reservation=cuda_debug -q shared -G 1 -c
 
 or grab a GPU node first, then run interactively:
 ```
-module load cgpu cuda 
+module load cgpu cuda
 salloc -C gpu -N 1 -t 60 -A ntrain --reservation=cuda_debug -q shared -G 1 -c 1
 srun -n 1 ./task1
 ```
@@ -55,7 +55,7 @@ Success!
 
 But unfortunately we don't see that.
 
-## Part A 
+## Part A
 
 Use basic *compute-sanitizer* functionality (no additional switches) to identify a problem in the code. Using the output from *compute-sanitizer*, identify the offending line of code. Fix this issue.
 

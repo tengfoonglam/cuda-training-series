@@ -132,7 +132,7 @@ When parallelizing a prefix sum, we often require multiple phases, for example a
 Start with the *task2.cu* code, and perform 2 things:
 
 - Modify the **FIXME** statements in the kernel to insert appropriate sync operations as requested, based on the two group types created at the top of the kernel.  Only one grid-wide sync point is needed, the others are all thread-block-level sync points.
-- In the host code, modify the **FIXME** statements to do a proper cooperative launch.  The launch function is already provided, you just need to fill in the remaining 4 arguments.  Refer to the *task2_solution.cu* file for help, or refer to the cuda runtime API documentation for the launch function: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__EXECUTION.html#group__CUDART__EXECUTION_1g504b94170f83285c71031be6d5d15f73  
+- In the host code, modify the **FIXME** statements to do a proper cooperative launch.  The launch function is already provided, you just need to fill in the remaining 4 arguments.  Refer to the *task2_solution.cu* file for help, or refer to the cuda runtime API documentation for the launch function: https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__EXECUTION.html#group__CUDART__EXECUTION_1g504b94170f83285c71031be6d5d15f73
 
 Once you have made the above modification, compile your code as follows:
 
