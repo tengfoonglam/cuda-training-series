@@ -26,6 +26,8 @@ __global__ void vadd(const float *A, const float *B, float *C, int ds) {
 int main() {
 
   static constexpr auto FLOAT_SIZE = sizeof(float);
+  static constexpr auto VECTOR_SIZE_BYTES = DSIZE * FLOAT_SIZE;
+
   float *h_A, *h_B, *h_C, *d_A, *d_B, *d_C;
   h_A = new float[DSIZE]; // allocate space for vectors in host memory
   h_B = new float[DSIZE];
@@ -35,14 +37,14 @@ int main() {
     h_B[i] = rand() / static_cast<float>(RAND_MAX);
     h_C[i] = 0.;
   }
-  cudaMalloc(&d_A, DSIZE * FLOAT_SIZE);  // allocate device space for vector A
-  cudaMalloc(&d_B, DSIZE * FLOAT_SIZE);  // allocate device space for vector B
-  cudaMalloc(&d_C, DSIZE * FLOAT_SIZE);  // allocate device space for vector C
+  cudaMalloc(&d_A, VECTOR_SIZE_BYTES);   // allocate device space for vector A
+  cudaMalloc(&d_B, VECTOR_SIZE_BYTES);   // allocate device space for vector B
+  cudaMalloc(&d_C, VECTOR_SIZE_BYTES);   // allocate device space for vector C
   cudaCheckErrors("cudaMalloc failure"); // error checking
   // copy vector A to device:
-  cudaMemcpy(d_A, h_A, DSIZE * FLOAT_SIZE, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_A, h_A, VECTOR_SIZE_BYTES, cudaMemcpyHostToDevice);
   // copy vector B to device:
-  cudaMemcpy(d_B, h_B, DSIZE * FLOAT_SIZE, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_B, h_B, VECTOR_SIZE_BYTES, cudaMemcpyHostToDevice);
   cudaCheckErrors("cudaMemcpy H2D failure");
   // cuda processing sequence step 1 is complete
   vadd<<<(DSIZE + BLOCK_SIZE - 1) / BLOCK_SIZE, BLOCK_SIZE>>>(d_A, d_B, d_C,
@@ -50,7 +52,7 @@ int main() {
   cudaCheckErrors("kernel launch failure");
   // cuda processing sequence step 2 is complete
   //  copy vector C from device to host:
-  cudaMemcpy(h_C, d_C, DSIZE * FLOAT_SIZE, cudaMemcpyDeviceToHost);
+  cudaMemcpy(h_C, d_C, VECTOR_SIZE_BYTES, cudaMemcpyDeviceToHost);
   // cuda processing sequence step 3 is complete
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
   printf("A[0] = %f\n", h_A[0]);
