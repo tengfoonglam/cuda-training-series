@@ -8,7 +8,7 @@ using namespace std;
 #define BLOCK_SIZE 16
 
 __global__ void stencil_1d(int *in, int *out) {
-  __shared__ int temp[2 * RADIUS + BLOCK_SIZE];
+  __shared__ int temp[BLOCK_SIZE + 2 * RADIUS];
   int gindex = threadIdx.x + blockIdx.x * blockDim.x;
 
   // Index of current input value (with gindex) in temp store
@@ -57,7 +57,8 @@ int main(void) {
   cudaMemcpy(d_out, out, size, cudaMemcpyHostToDevice);
 
   // Launch stencil_1d() kernel on GPU
-  stencil_1d<<<N / BLOCK_SIZE, BLOCK_SIZE>>>(d_in, d_out);
+  // Offset by RADIUS so it starts on the first value and not the padding
+  stencil_1d<<<N / BLOCK_SIZE, BLOCK_SIZE>>>(d_in + RADIUS, d_out + RADIUS);
 
   // Copy result back to host
   cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
