@@ -10,6 +10,9 @@ Each HW folder contains the completed exercises and a notes.md with a summary of
 - Follow the instructions [here](https://www.cherryservers.com/blog/install-cuda-ubuntu) to upgrade Nvidia drivers and install CUDA
 - Install CMake: `sudo apt install cmake`
 
+In the event that you need to uninstall CUDA to install another version, run
+`sudo apt-get --allow-change-held-packages --purge remove "*cublas*" "cuda*" "nsight*"`
+
 ## Building
 
 In the git root directory

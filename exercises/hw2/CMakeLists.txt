@@ -7,6 +7,6 @@ if (POLICY CMP0104)
 endif()
 
 foreach(example_name stencil_1d)
+    add_executable("${example_name}" "${example_name}.cu")
     add_executable("${example_name}_solution" "${example_name}_solution.cu")
-    add_executable("${example_name}" "${example_name}_solution.cu")
 endforeach()
