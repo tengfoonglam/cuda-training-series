@@ -3,6 +3,8 @@ The materials in this repository accompany the CUDA Training Series presented at
 
 You can find the slides and presentation recordings [here](https://www.olcf.ornl.gov/cuda-training-series/)
 
+Each HW folder contains the completed exercises and a notes.md with a summary of the lecture material for that lesson.
+
 ## Installing CUDA on Ubuntu
 
 - Follow the instructions [here](https://www.cherryservers.com/blog/install-cuda-ubuntu) to upgrade Nvidia drivers and install CUDA
