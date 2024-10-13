@@ -3,11 +3,11 @@
 **Host**: CPU and its memory
 **Device**: GPU and its memory
 
-**CUDA key functionality:**
+## CUDA key functionality
  - Use GPU to parallelize compute-intensive functions and CPU to perform rest of the sequential code
  - PCIe or NVLink Bus is used to transfer data from CPU to/from GPU
 
-**Terms and Syntax**
+## Terms and Syntax
 
  - **\__global__**
    - Runs on device, can be called from host or device code
@@ -26,7 +26,7 @@
    - cudaFree()
    - cudaMemcpy()
 
-**Blocks and Threads**
+## Blocks and Threads
 
 **add<<<N, M>>>()**
 Execute N times in separate blocks (in parallel), each block with M threads
@@ -53,5 +53,5 @@ c[index] = a[index] + b[index];
 add<<<(N + M-1) / M,M>>>(d_a, d_b, d_c, N);
 ```
 
-**Threads vs Blocks**
+## Threads vs Blocks
 Threads have mechanisms to communicate and synchronize as compared to blocks
