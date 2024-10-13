@@ -23,9 +23,12 @@ static constexpr float kBVal = 2.0f;
 static constexpr float kMatrixSizeBytes = kDSize * kDSize * sizeof(float);
 
 // matrix multiply (naive) kernel: C = A * B
+// Refer to https://www.youtube.com/watch?v=Q3GgbfGTnVc for graphical
+// explanation
 __global__ void mmul(const float *A, const float *B, float *C, int ds) {
 
   // declare cache in shared memory
+  // Local tiles
   __shared__ float As[kBlockSize][kBlockSize];
   __shared__ float Bs[kBlockSize][kBlockSize];
 
@@ -34,27 +37,33 @@ __global__ void mmul(const float *A, const float *B, float *C, int ds) {
   const int idy =
       threadIdx.y + blockDim.y * blockIdx.y; // create thread y index
 
-  if ((idx < ds) && (idy < ds)) {
-    float temp = 0.;
-    for (int i = 0; i < ds / kBlockSize; ++i) {
-
-      // Load data into shared memory
-      As[threadIdx.y][threadIdx.x] = A[idy + i];
-      Bs[threadIdx.y][threadIdx.x] = B[idx + i];
-
-      // Synchronize
-      __syncthreads();
-
-      // Keep track of the running sum
-      for (int k = 0; k < kBlockSize; ++k) {
-        temp += As[i][k] * Bs[k][i]; // dot product of row and column
-      }
-      __syncthreads();
-    }
-
-    // Write to global memory
-    C[idy * ds + idx] = temp;
+  if (idx >= ds || idy >= ds) {
+    return;
   }
+
+  float temp = 0.;
+  const int numberTiles = ds / kBlockSize;
+  for (int i = 0; i < numberTiles; ++i) {
+
+    // Load data into shared memory tiles
+    // each thread should write one element into each of the local A and B tiles
+    // In this example, kBlockSize == blockDim.x == blockDim.y
+    As[threadIdx.y][threadIdx.x] = A[ds * idy + (i * blockDim.x + threadIdx.x)];
+    Bs[threadIdx.y][threadIdx.x] = B[ds * (i * blockDim.y + threadIdx.y) + idx];
+
+    // Synchronize
+    __syncthreads();
+
+    // Perform local matrix multiplication and add to tiles
+    for (int k = 0; k < kBlockSize; ++k) {
+      temp += As[threadIdx.y][k] *
+              Bs[k][threadIdx.x]; // dot product of row and column
+    }
+    __syncthreads();
+  }
+
+  // Write to global memory
+  C[idy * ds + idx] = temp;
 }
 
 int main() {
@@ -63,8 +72,8 @@ int main() {
 
   // these are just for timing
   clock_t t0, t1, t2;
-  double t1sum = 0.0;
-  double t2sum = 0.0;
+  double t1sum = 0.;
+  double t2sum = 0.;
 
   // start timing
   t0 = clock();
@@ -80,7 +89,7 @@ int main() {
 
   // Initialization timing
   t1 = clock();
-  t1sum = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
+  t1sum = static_cast<double>(t1 - t0) / CLOCKS_PER_SEC;
   printf("Init took %f seconds.  Begin compute\n", t1sum);
 
   // Allocate device memory and copy input data over to GPU
@@ -107,14 +116,14 @@ int main() {
 
   // GPU timing
   t2 = clock();
-  t2sum = ((double)(t2 - t1)) / CLOCKS_PER_SEC;
+  t2sum = static_cast<double>(t2 - t1) / CLOCKS_PER_SEC;
   printf("Done. Compute took %f seconds\n", t2sum);
 
   // Cuda processing sequence step 3 is complete
 
   // Verify results
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
-  for (int i = 0; i < kDSize * kDSize; i++)
+  for (int i = 0; i < kDSize * kDSize; ++i)
     if (h_C[i] != kAVal * kBVal * kDSize) {
       printf("mismatch at index %d, was: %f, should be: %f\n", i, h_C[i],
              kAVal * kBVal * kDSize);
