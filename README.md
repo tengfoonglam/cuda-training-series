@@ -15,7 +15,7 @@ Each HW folder contains:
 In the event that you need to uninstall CUDA to install another version, run
 `sudo apt-get --allow-change-held-packages --purge remove "*cublas*" "cuda*" "nsight*"`
 
-## Building
+## Build Instructions
 
 In the git root directory
 
@@ -28,12 +28,12 @@ Build executables should be found in the exercises folder within the build folde
 
 This repository uses [pre-commit hooks](https://pre-commit.com/) to ensure that code is checked for simple issues before it is committed.
 
-### Pre-Commit Hooks Setup
+#### Pre-Commit Hooks Setup
 
 * Install pre-commit: `sudo apt install pre-commit`
 * Update pre-commit version to prevent this error `Type tag 'textproto' is not recognized`: `pip install --force-reinstall -U pre-commit`
 
-### Running the hooks
+#### Running the hooks
 
 * Run hooks on every commit: `pre-commit install`
 * Running the hooks manually: `pre-commit run --all`
