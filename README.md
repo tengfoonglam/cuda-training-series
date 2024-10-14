@@ -3,7 +3,9 @@ The materials in this repository accompany the CUDA Training Series presented at
 
 You can find the slides and presentation recordings [here](https://www.olcf.ornl.gov/cuda-training-series/)
 
-Each HW folder contains the completed exercises and a notes.md with a summary of the lecture material for that lesson.
+Each HW folder contains:
+- the completed exercises
+- **notes\.md** with a summary of the lecture material + tips/results for the exercise
 
 ## Installing CUDA on Ubuntu
 
