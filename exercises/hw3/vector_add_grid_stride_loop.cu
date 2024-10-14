@@ -18,7 +18,7 @@ __global__ void vadd(const float *A, const float *B, float *C, int ds) {
 
   for (int idx = threadIdx.x + blockDim.x * blockIdx.x; idx < ds;
        idx += gridDim.x * blockDim.x) // a grid-stride loop
-    FIXME                             // do the vector (element) add here
+    C[idx] = A[idx] + B[idx];         // do the vector (element) add here
 }
 
 int main() {
@@ -33,22 +33,22 @@ int main() {
     h_C[i] = 0;
   }
   cudaMalloc(&d_A, DSIZE * sizeof(float)); // allocate device space for vector A
-  FIXME                                    // allocate device space for vector B
-      FIXME                                // allocate device space for vector C
-          cudaCheckErrors("cudaMalloc failure"); // error checking
+  cudaMalloc(&d_B, DSIZE * sizeof(float)); // allocate device space for vector B
+  cudaMalloc(&d_C, DSIZE * sizeof(float)); // allocate device space for vector C
+  cudaCheckErrors("cudaMalloc failure");   // error checking
   // copy vector A to device:
   cudaMemcpy(d_A, h_A, DSIZE * sizeof(float), cudaMemcpyHostToDevice);
   // copy vector B to device:
-  FIXME
+  cudaMemcpy(d_B, h_B, DSIZE * sizeof(float), cudaMemcpyHostToDevice);
   cudaCheckErrors("cudaMemcpy H2D failure");
   // cuda processing sequence step 1 is complete
-  int blocks = 1;  // modify this line for experimentation
-  int threads = 1; // modify this line for experimentation
+  int blocks = 160;   // modify this line for experimentation (1 / 160)
+  int threads = 1024; // modify this line for experimentation (1 / 1024)
   vadd<<<blocks, threads>>>(d_A, d_B, d_C, DSIZE);
   cudaCheckErrors("kernel launch failure");
   // cuda processing sequence step 2 is complete
   //  copy vector C from device to host:
-  FIXME
+  cudaMemcpy(h_C, d_C, DSIZE * sizeof(float), cudaMemcpyDeviceToHost);
   // cuda processing sequence step 3 is complete
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
   printf("A[0] = %f\n", h_A[0]);
