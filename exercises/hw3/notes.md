@@ -42,3 +42,29 @@
   - Analysis-driven Optimization
   - Use Nsight Compute to show information about whether the compute
 subsystem or the memory subsystem has been saturated
+
+## HW 3 Notes
+
+To perform the profiling, use Nvidia Visual Profiler
+
+If Nvidia Visual Profiler does not run properly, apply the following fix [here](https://askubuntu.com/questions/1472456/cannot-open-nvidia-visualizer-profilernvvp)
+
+Install OpenJDK
+`sudo apt install openjdk-8-jdk`
+
+Then run
+`nvvp -vm /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java`
+
+Results for the ***vadd*** operation
+
+1 Block 1 Thread
+
+![1 Block 1 Thread](./diagrams/1_block_1_thread.png)
+
+1 Block 1024 Threads
+
+![1 Block 1024 Threads](./diagrams/1_block_1024_threads.png)
+
+160 Blocks 1024 Threads
+
+![160 Blocks 1024 Threads](./diagrams/160_blocks_1024_threads.png)
