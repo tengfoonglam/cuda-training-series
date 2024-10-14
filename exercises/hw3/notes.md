@@ -57,14 +57,11 @@ Then run
 
 Results for the ***vadd*** operation
 
-1 Block 1 Thread
-
+**1 Block 1 Thread**
 ![1 Block 1 Thread](./diagrams/1_block_1_thread.png)
 
-1 Block 1024 Threads
-
+**1 Block 1024 Threads**
 ![1 Block 1024 Threads](./diagrams/1_block_1024_threads.png)
 
-160 Blocks 1024 Threads
-
+**160 Blocks 1024 Threads**
 ![160 Blocks 1024 Threads](./diagrams/160_blocks_1024_threads.png)
