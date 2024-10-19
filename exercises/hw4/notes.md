@@ -113,3 +113,9 @@ Example 6: Warp requests 32 scattered 4-byte words (non-caching load)
 - No bank conflicts: Each thread accesses a different bank
 - 2-way bank conflicts: Each bank has two threads accessing its data --> Data access twice as slow as ideal case
 - Use padding to reduce bank conflicts (e.g. required for matrix transpose operations)
+
+## HW 4 Notes ##
+
+#### Indicing Diagram
+
+![](./diagrams/matrix_sum.png)
