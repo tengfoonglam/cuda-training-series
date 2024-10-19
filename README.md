@@ -3,7 +3,9 @@ The materials in this repository accompany the CUDA Training Series presented at
 
 You can find the slides and presentation recordings [here](https://www.olcf.ornl.gov/cuda-training-series/)
 
-Each HW folder contains the completed exercises and a notes.md with a summary of the lecture material for that lesson.
+Each HW folder contains:
+- the completed exercises
+- **notes\.md** with a summary of the lecture material + tips/results for the exercise
 
 ## Installing CUDA on Ubuntu
 
@@ -13,7 +15,7 @@ Each HW folder contains the completed exercises and a notes.md with a summary of
 In the event that you need to uninstall CUDA to install another version, run
 `sudo apt-get --allow-change-held-packages --purge remove "*cublas*" "cuda*" "nsight*"`
 
-## Building
+## Build Instructions
 
 In the git root directory
 
@@ -26,12 +28,12 @@ Build executables should be found in the exercises folder within the build folde
 
 This repository uses [pre-commit hooks](https://pre-commit.com/) to ensure that code is checked for simple issues before it is committed.
 
-### Pre-Commit Hooks Setup
+#### Pre-Commit Hooks Setup
 
 * Install pre-commit: `sudo apt install pre-commit`
 * Update pre-commit version to prevent this error `Type tag 'textproto' is not recognized`: `pip install --force-reinstall -U pre-commit`
 
-### Running the hooks
+#### Running the hooks
 
 * Run hooks on every commit: `pre-commit install`
 * Running the hooks manually: `pre-commit run --all`
