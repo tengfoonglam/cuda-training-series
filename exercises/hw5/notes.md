@@ -61,7 +61,7 @@
 3. Using sequential addressing, add intermetide results iteratively
 4. First thread of each block perform an atomic sum to the final output
 
-#### With Warp Shuffle (# Threads: # of warps per thread block (1024 / 32 = 32))
+#### With Warp Shuffle (# Threads: # of warps per thread block (maximum 1024 / 32 = 32))
 1. Create shared memory array of equal to number of threads
 2. Use grid stride technique to compute intermediate sum in local variable `val` (as opposed to storing in shared memory)
 3. Using sequential addressing and warp shuffle, accumulate sum within each warp and write to shared memory
