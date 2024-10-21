@@ -12,7 +12,11 @@
     }                                                                          \
   } while (0)
 
+// const size_t N = 163840ULL; // data size
 const size_t N = 8ULL * 1024ULL * 1024ULL; // data size
+// const size_t N = 16ULL * 1024ULL * 1024ULL; // data size
+// const size_t N = 32ULL * 1024ULL * 1024ULL; // data size
+
 // const size_t N = 256*640; // data size
 const int BLOCK_SIZE = 256; // CUDA maximum is 1024
 // naive atomic reduction kernel
@@ -122,9 +126,9 @@ int main() {
       "atomic reduction kernel execution failure or cudaMemcpy H2D failure");
   if (*h_sum != (float)N) {
     printf("atomic sum reduction incorrect!\n");
-    return -1;
+  } else {
+    printf("atomic sum reduction correct!\n");
   }
-  printf("atomic sum reduction correct!\n");
   const int blocks = 640;
   cudaMemset(d_sum, 0, sizeof(float));
   cudaCheckErrors("cudaMemset failure");
@@ -139,9 +143,9 @@ int main() {
       "reduction w/atomic kernel execution failure or cudaMemcpy H2D failure");
   if (*h_sum != (float)N) {
     printf("reduction w/atomic sum incorrect!\n");
-    return -1;
+  } else {
+    printf("reduction w/atomic sum correct!\n");
   }
-  printf("reduction w/atomic sum correct!\n");
   cudaMemset(d_sum, 0, sizeof(float));
   cudaCheckErrors("cudaMemset failure");
   // cuda processing sequence step 1 is complete
@@ -155,8 +159,9 @@ int main() {
                   "cudaMemcpy H2D failure");
   if (*h_sum != (float)N) {
     printf("reduction warp shuffle sum incorrect!\n");
-    return -1;
+  } else {
+    printf("reduction warp shuffle sum correct!\n");
   }
-  printf("reduction warp shuffle sum correct!\n");
+
   return 0;
 }

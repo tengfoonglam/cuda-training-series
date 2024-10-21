@@ -68,3 +68,23 @@
     - Hence each warp contributes one intermediate sum
 4. Using the first warp of each block, sum all elements in shared memory using sequential addressing and warp shuffle
 5. First thread of each block perform an atomic sum to the final output
+
+## HW 5 Notes
+
+#### Comparing Reductions
+
+|    N    | Atomic/us | Parallel Reduction/us | Warp Shuffle Reduction/us |
+| ------- | --------- | --------------------- | ------------------------- |
+| 163840  | 365       | 23                    | 16                        |
+| ~8M     | 18591     | 246                   | 236                       |
+| ~16M    | 37320     | 453                   | 455                       |
+| ~32M    | Incorrect sum | 906               | 905                       |
+
+- Atomic reduction is the slowest for all N
+- For >8M, there is not a big difference between parallel an warp shuffle reductions
+- The minimal difference is because the memory bandwidth of the GPU became the limiting factor instead of the kernel implementation
+   - According to this [website](https://www.techspot.com/review/1209-nvidia-geforce-gtx-1060/), the GTX 1060 has a theoretical memory bandwidth of 192gbps
+   - Based on the N=~8M results, actual memory bandwidth is roughly
+     (4 bytes/int * 8000000 ints) / (250 * 10 ^ -6 s) * (10^-9 GB / B) = 128 gbps
+- At a smaller N, the warp shuffle is noticeably faster than parallel reduction (30% faster)
+- For 32M case, there are not enough threads for each element for the input array so the sum was incorrect. Max number of threads 1024 * 1024 = 1638400
