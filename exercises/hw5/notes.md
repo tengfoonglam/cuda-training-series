@@ -88,3 +88,12 @@
      (4 bytes/int * 8000000 ints) / (250 * 10 ^ -6 s) * (10^-9 GB / B) = 128 gbps
 - At a smaller N, the warp shuffle is noticeably faster than parallel reduction (30% faster)
 - For 32M case, there are not enough threads for each element for the input array so the sum was incorrect. Max number of threads 1024 * 1024 = 1638400
+
+#### Revisit row_sums from hw4
+
+Computation time / ms:
+Naive row sum: 51.437
+Reduction row sum: 7.056
+Column sum: 6.564
+
+- The row sum is now of similar speed to the column sum
