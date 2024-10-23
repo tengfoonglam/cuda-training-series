@@ -8,7 +8,7 @@ endif()
 
 add_executable("reductions" "reductions.cu")
 
-foreach(example_name max_reduction)
+foreach(example_name max_reduction matrix_sums_reduction)
     add_executable("${example_name}" "${example_name}.cu")
     add_executable("${example_name}_solution" "${example_name}_solution.cu")
 endforeach()

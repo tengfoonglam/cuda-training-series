@@ -58,7 +58,7 @@
 #### Without Warp Shuffle (# Threads: block size)
 1. Create shared memory array of block size elements
 2. Using grid-stride loop, compute intermediate sums (N/block_size elements) to shared memory
-3. Using sequential addressing, add intermetide results iteratively
+3. Using sequential addressing, add intermediate results iteratively
 4. First thread of each block perform an atomic sum to the final output
 
 #### With Warp Shuffle (# Threads: # of warps per thread block (maximum 1024 / 32 = 32))

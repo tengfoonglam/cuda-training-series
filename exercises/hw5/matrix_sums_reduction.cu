@@ -31,6 +31,38 @@ __global__ void row_sums(const float *A, float *sums, size_t ds) {
     sums[idx] = sum;
   }
 }
+
+__global__ void row_sums_reduction(const float *A, float *sums, size_t ds) {
+  // Shared memory: number of threads
+  __shared__ float sdata[block_size];
+  const size_t row_idx = blockIdx.x; // each block handles a row
+  const size_t index_at_start_of_row = row_idx * ds;
+  const size_t tid = threadIdx.x;
+  sdata[tid] = 0.0f;
+  size_t i = threadIdx.x;
+
+  if (row_idx >= ds) {
+    return;
+  }
+
+  // block stride sum to shared memory
+  while (i < ds) { // grid stride loop to load data
+    sdata[tid] += A[index_at_start_of_row + i];
+    i += blockDim.x;
+  }
+
+  // sum shared memory
+  for (unsigned int s = blockDim.x / 2; s > 0; s >>= 1) {
+    __syncthreads();
+    if (tid < s) {
+      sdata[tid] += sdata[tid + s];
+    }
+  }
+  if (tid == 0) {
+    sums[row_idx] = sdata[0];
+  }
+}
+
 // matrix column-sum kernel
 __global__ void column_sums(const float *A, float *sums, size_t ds) {
 
@@ -56,19 +88,18 @@ bool validate(float *data, size_t sz) {
     }
   return true;
 }
-int main() {
 
+void run_row_sum_naive() {
   float *h_A, *h_sums, *d_A, *d_sums;
   h_A = new float[DSIZE * DSIZE]; // allocate space for data in host memory
   h_sums = new float[DSIZE]();
-  for (int i = 0; i < DSIZE * DSIZE; i++) // initialize matrix in host memory
+  for (int i = 0; i < DSIZE * DSIZE; ++i) // initialize matrix in host memory
     h_A[i] = 1.0f;
   cudaMalloc(&d_A,
              DSIZE * DSIZE * sizeof(float)); // allocate device space for A
   cudaMalloc(&d_sums,
              DSIZE * sizeof(float)); // allocate device space for vector d_sums
   cudaCheckErrors("cudaMalloc failure"); // error checking
-  // copy matrix A to device:
   cudaMemcpy(d_A, h_A, DSIZE * DSIZE * sizeof(float), cudaMemcpyHostToDevice);
   cudaCheckErrors("cudaMemcpy H2D failure");
   // cuda processing sequence step 1 is complete
@@ -81,9 +112,50 @@ int main() {
   // cuda processing sequence step 3 is complete
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
   if (!validate(h_sums, DSIZE))
-    return -1;
-  printf("row sums correct!\n");
-  cudaMemset(d_sums, 0, DSIZE * sizeof(float));
+    printf("row sums incorrect!\n");
+  else
+    printf("row sums correct!\n");
+}
+
+void run_row_sum_reduction() {
+
+  float *h_A, *h_sums, *d_A, *d_sums;
+  h_A = new float[DSIZE * DSIZE]; // allocate space for data in host memory
+  h_sums = new float[DSIZE]();
+  for (int i = 0; i < DSIZE * DSIZE; ++i) // initialize matrix in host memory
+    h_A[i] = 1.0f;
+  cudaMalloc(&d_A,
+             DSIZE * DSIZE * sizeof(float)); // allocate device space for A
+  cudaMalloc(&d_sums,
+             DSIZE * sizeof(float)); // allocate device space for vector d_sums
+  cudaCheckErrors("cudaMalloc failure"); // error checking
+  cudaMemcpy(d_A, h_A, DSIZE * DSIZE * sizeof(float), cudaMemcpyHostToDevice);
+  cudaCheckErrors("cudaMemcpy H2D failure");
+  // One block per row
+  row_sums_reduction<<<DSIZE, block_size>>>(d_A, d_sums, DSIZE);
+  cudaCheckErrors("kernel launch failure");
+  cudaMemcpy(h_sums, d_sums, DSIZE * sizeof(float), cudaMemcpyDeviceToHost);
+  cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
+  if (!validate(h_sums, DSIZE))
+    printf("row sums reduction incorrect!\n");
+  else
+    printf("row sums reduction correct!\n");
+}
+
+void run_col_sum() {
+  float *h_A, *h_sums, *d_A, *d_sums;
+  h_A = new float[DSIZE * DSIZE]; // allocate space for data in host memory
+  h_sums = new float[DSIZE]();
+  for (int i = 0; i < DSIZE * DSIZE; ++i) // initialize matrix in host memory
+    h_A[i] = 1.0f;
+  cudaMalloc(&d_A,
+             DSIZE * DSIZE * sizeof(float)); // allocate device space for A
+  cudaMalloc(&d_sums,
+             DSIZE * sizeof(float)); // allocate device space for vector d_sums
+  cudaCheckErrors("cudaMalloc failure"); // error checking
+  cudaMemcpy(d_A, h_A, DSIZE * DSIZE * sizeof(float), cudaMemcpyHostToDevice);
+  cudaCheckErrors("cudaMemcpy H2D failure");
+  // cuda processing sequence step 1 is complete
   column_sums<<<(DSIZE + block_size - 1) / block_size, block_size>>>(
       d_A, d_sums, DSIZE);
   cudaCheckErrors("kernel launch failure");
@@ -93,7 +165,14 @@ int main() {
   // cuda processing sequence step 3 is complete
   cudaCheckErrors("kernel execution failure or cudaMemcpy H2D failure");
   if (!validate(h_sums, DSIZE))
-    return -1;
-  printf("column sums correct!\n");
+    printf("column sums incorrect!\n");
+  else
+    printf("column sums correct!\n");
+}
+
+int main() {
+  run_row_sum_naive();
+  run_row_sum_reduction();
+  run_col_sum();
   return 0;
 }
