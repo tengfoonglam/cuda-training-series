@@ -79,3 +79,13 @@
 - There are scenarios where UM may enable a design pattern (e.g. graph traversal)
 - Oversubscription does not easily/magically give you GPU-type performance on arbitrary datasets/algorithms
 - For codes that tend to use many different libraries, each of which makes some demand on GPU memory with no regard for what other libraries are doing, UM can sometimes be a primary way to tackle this challenge (via use of oversubscription), rather than an entire rewrite of the codebase
+
+## HW 6 Notes
+
+#### Array Increment
+
+| Experiment     | Kernet Execution Time / us | CPU Page Faults | GPU Page Faults |
+| -------------- | -------------------------- | --------------- |---------------- |
+| No UM          |         1902.86            |        -        |        -        |
+| UM Naive       |                            |                 |                 |
+| UM Prefetching |                            |                 |                 |
