@@ -14,48 +14,37 @@
 
 template <typename T> void alloc_bytes(T &ptr, size_t num_bytes) {
 
-  cudaMallocManaged(&ptr, num_bytes);
+  ptr = (T)malloc(num_bytes);
 }
 
 __global__ void inc(int *array, size_t n) {
   size_t idx = threadIdx.x + blockDim.x * blockIdx.x;
   while (idx < n) {
-    ++array[idx];
+    array[idx]++;
     idx += blockDim.x * gridDim.x; // grid-stride loop
   }
 }
 
-static constexpr size_t DS = 32ULL * 1024ULL * 1024ULL;
-
-// Options to toggle between the different configurations required for the HW
-// questions
-static constexpr bool PREFETCH_DATA = true;
-static constexpr int NUMBER_KERNEL_EXECUTIONS = 1; // 10000
+const size_t ds = 32ULL * 1024ULL * 1024ULL;
 
 int main() {
 
-  int *um_array;
-  alloc_bytes(um_array, DS * sizeof(um_array[0]));
+  int *h_array, *d_array;
+  alloc_bytes(h_array, ds * sizeof(h_array[0]));
+  cudaMalloc(&d_array, ds * sizeof(d_array[0]));
   cudaCheckErrors("cudaMalloc Error");
-  memset(um_array, 0, DS * sizeof(um_array[0]));
-  if constexpr (PREFETCH_DATA) {
-    cudaMemPrefetchAsync(um_array, DS * sizeof(um_array[0]), 0);
-  }
-  for (size_t i = 0; i < NUMBER_KERNEL_EXECUTIONS; ++i) {
-    inc<<<256, 256>>>(um_array, DS);
-  }
+  memset(h_array, 0, ds * sizeof(h_array[0]));
+  cudaMemcpy(d_array, h_array, ds * sizeof(h_array[0]), cudaMemcpyHostToDevice);
+  cudaCheckErrors("cudaMemcpy H->D Error");
+  inc<<<256, 256>>>(d_array, ds);
   cudaCheckErrors("kernel launch error");
-  if constexpr (PREFETCH_DATA) {
-    cudaMemPrefetchAsync(um_array, DS * sizeof(um_array[0]), cudaCpuDeviceId);
-  }
-  cudaDeviceSynchronize();
-  cudaCheckErrors("cudaDeviceSynchronize Error");
-  for (int i = 0; i < DS; ++i) {
-    if (um_array[i] != NUMBER_KERNEL_EXECUTIONS) {
-      printf("mismatch at %d, was: %d, expected: %d\n", i, um_array[i], 1);
+  cudaMemcpy(h_array, d_array, ds * sizeof(h_array[0]), cudaMemcpyDeviceToHost);
+  cudaCheckErrors("kernel execution or cudaMemcpy D->H Error");
+  for (int i = 0; i < ds; i++)
+    if (h_array[i] != 1) {
+      printf("mismatch at %d, was: %d, expected: %d\n", i, h_array[i], 1);
       return -1;
     }
-  }
   printf("success!\n");
   return 0;
 }

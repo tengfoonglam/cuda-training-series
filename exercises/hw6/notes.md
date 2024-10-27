@@ -88,11 +88,17 @@
 
 #### Array Increment
 
-| Experiment     | Kernet Execution Time / us | CPU Page Faults | GPU Page Faults |
-| -------------- | -------------------------- | --------------- |---------------- |
-| No UM          |         1902.86            |        -        |        -        |
-| UM Naive       |         50631.31           |       768       |        0        |
-| UM Prefetching |         1901.53            |       384       |        0        |
+| Experiment     | Kernet Execution Time / us | CPU Page Faults | GPU Page Faults | HtoD Operations | DtoH Operations |
+| -------------- | -------------------------- | --------------- |---------------- | --------------- | --------------- |
+| No UM          |         1902.86            |        -        |        -        |        1        |        1        |
+| UM Naive       |         50631.31           |       768       |        0        |        5316     |        768      |
+| UM Prefetching |         1901.53            |       384       |        0        |        64       |        64       |
 
 - With prefetching, we have 'recovered' the performance lost using unified memory by prefetching the data before and after the kernel execution.
+- Hence, it UM might make it easier to write CUDA code but it might take a performance hit if you are not careful with your implementation
 - Note: Not sure why there are no GPU page faults for both UM implementations
+
+#### Increasing execution to N=10000 instead of N=1
+
+- As kernel size is small, for UM Prefetching case, `cudaMallocManaged` takes up 78.9% of the execution time
+- When kernel is run 10000 times instead of once, `cudaMallocManaged` takes up 0.5% of the execution time which shows that the additional overhead of using UM might become negligible for expensive CUDA programs

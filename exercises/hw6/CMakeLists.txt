@@ -10,3 +10,5 @@ foreach(example_name linked_list array_inc)
     add_executable("${example_name}" "${example_name}.cu")
     add_executable("${example_name}_solution" "${example_name}_solution.cu")
 endforeach()
+
+add_executable(array_inc_original array_inc_original.cu)
