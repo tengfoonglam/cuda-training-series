@@ -82,7 +82,7 @@
 
 ## HW 6 Notes
 
-- Besides using Nvidia Visual Profiler, the following command can be run
+- Besides using Nvidia Visual Profiler, the following command can be run to execute performance analysis and print out the results in terminal
 
 `nsys profile --stats=true --cuda-um-gpu-page-faults=true --cuda-um-cpu-page-faults=true --cuda-memory-usage=true --show-output=true [terminal command to run application]`
 
