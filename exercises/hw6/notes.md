@@ -82,10 +82,17 @@
 
 ## HW 6 Notes
 
+- Besides using Nvidia Visual Profiler, the following command can be run
+
+`nsys profile --stats=true --cuda-um-gpu-page-faults=true --cuda-um-cpu-page-faults=true --cuda-memory-usage=true --show-output=true [terminal command to run application]`
+
 #### Array Increment
 
 | Experiment     | Kernet Execution Time / us | CPU Page Faults | GPU Page Faults |
 | -------------- | -------------------------- | --------------- |---------------- |
 | No UM          |         1902.86            |        -        |        -        |
-| UM Naive       |                            |                 |                 |
-| UM Prefetching |                            |                 |                 |
+| UM Naive       |         50631.31           |       768       |        0        |
+| UM Prefetching |         1901.53            |       384       |        0        |
+
+- With prefetching, we have 'recovered' the performance lost using unified memory by prefetching the data before and after the kernel execution.
+- Note: Not sure why there are no GPU page faults for both UM implementations
