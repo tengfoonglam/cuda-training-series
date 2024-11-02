@@ -173,3 +173,18 @@ cudaStream_t st_high, st_low;
 cudaStreamCreateWithPriority(&st_high, cudaStreamNonBlocking, priority_high);
 cudaStreamCreateWithPriority(&st_low, cudaStreamNonBlocking, priority_low);
 ```
+
+## HW 7 Notes
+
+#### Overlap
+
+![](./diagrams/ovelap_profiling.png)
+
+- Non-stream timing: 77.876 ms
+- Stream timing: 39.749 ms
+- For the non-stream part of the program (first portion), there is no overlap between HtoD, kernel and DtoH
+- For the stream part of the program, there is overlap between the three components, resulting in a execution time speed up
+
+#### Simple Multi-GPU
+
+- Note: As my laptop does not have multiple GPUs I do not have the results for this exercise

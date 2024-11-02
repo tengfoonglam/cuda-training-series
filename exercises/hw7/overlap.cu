@@ -7,7 +7,8 @@
 // modifiable
 typedef float ft;
 const int chunks = 64;
-const size_t ds = 1024 * 1024 * chunks;
+const size_t elements_per_chunk = 1024 * 1024;
+const size_t ds = elements_per_chunk * chunks;
 const int count = 22;
 const int num_streams = 8;
 
@@ -97,14 +98,21 @@ int main() {
 
   unsigned long long et = dtime_usec(0);
 
+  const size_t bytes_per_chunk = (elements_per_chunk) * sizeof(ft);
   for (int i = 0; i < chunks; i++) { // depth-first launch
-    cudaMemcpyAsync(d_x + FIXME, h_x + FIXME, (FIXME) * sizeof(ft),
-                    cudaMemcpyHostToDevice, streams[FIXME]);
-    gaussian_pdf<<<((FIXME) + 255) / 256, 256, 0, streams[FIXME]>>>(
-        d_x + FIXME, d_y + FIXME, 0.0, 1.0, FIXME);
-    cudaMemcpyAsync(h_y + i * (ds / chunks), d_y + i * (ds / chunks),
-                    (ds / chunks) * sizeof(ft), cudaMemcpyDeviceToHost,
-                    streams[i % num_streams]);
+    const size_t offset = elements_per_chunk * i;
+    ft *d_x_start_ptr = d_x + offset;
+    ft *d_y_start_ptr = d_y + offset;
+    ft *h_x_start_ptr = h_x + offset;
+    ft *h_y_start_ptr = h_y + offset;
+    const cudaStream_t &stream_to_use = streams[i % num_streams];
+
+    cudaMemcpyAsync(d_x_start_ptr, h_x_start_ptr, bytes_per_chunk,
+                    cudaMemcpyHostToDevice, stream_to_use);
+    gaussian_pdf<<<((elements_per_chunk) + 255) / 256, 256, 0, stream_to_use>>>(
+        d_x_start_ptr, d_y_start_ptr, 0.0, 1.0, elements_per_chunk);
+    cudaMemcpyAsync(h_y_start_ptr, d_y_start_ptr, bytes_per_chunk,
+                    cudaMemcpyDeviceToHost, stream_to_use);
   }
   cudaDeviceSynchronize();
   cudaCheckErrors("streams execution error");

@@ -64,6 +64,7 @@ int main() {
   h_x = (ft *)malloc(ds * sizeof(ft));
 
   for (int i = 0; i < num_gpus; i++) {
+    cudaSetDevice(i);
     cudaMalloc(&d_x[i], ds * sizeof(ft));
     cudaMalloc(&d_y[i], ds * sizeof(ft));
   }
@@ -73,6 +74,7 @@ int main() {
     for (size_t j = 0; j < ds; j++) {
       h_x[j] = rand() / (ft)RAND_MAX;
     }
+    cudaSetDevice(i);
     cudaMemcpy(d_x[i], h_x, ds * sizeof(ft), cudaMemcpyHostToDevice);
   }
   cudaCheckErrors("copy error");
@@ -80,6 +82,7 @@ int main() {
   unsigned long long et1 = dtime_usec(0);
 
   for (int i = 0; i < num_gpus; i++) {
+    cudaSetDevice(i);
     gaussian_pdf<<<(ds + 255) / 256, 256>>>(d_x[i], d_y[i], 0.0, 1.0, ds);
   }
   cudaDeviceSynchronize();
