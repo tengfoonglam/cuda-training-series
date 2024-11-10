@@ -51,8 +51,8 @@
 
 __global__ void naive_cuda_transpose(const int m, const double *const a,
                                      double *const c) {
-  const size_t myRow = blockDim.y * blockIdx.y + threadIdx.y;
-  const size_t myCol = blockDim.x * blockIdx.x + threadIdx.x;
+  const size_t myRow = blockDim.x * blockIdx.x + threadIdx.x;
+  const size_t myCol = blockDim.y * blockIdx.y + threadIdx.y;
   if (myRow < m && myCol < m) {
     c[INDX(myRow, myCol, m)] = a[INDX(myCol, myRow, m)];
   } /* end if */
