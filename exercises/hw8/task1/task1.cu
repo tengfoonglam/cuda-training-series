@@ -51,10 +51,10 @@
 
 __global__ void naive_cuda_transpose(const int m, const double *const a,
                                      double *const c) {
-  const int myRow = FIXME const int myCol = FIXME
-
-      if (myRow < m && myCol < m) {
-    c[FIXME] = a[FIXME];
+  const size_t myRow = blockDim.y * blockIdx.y + threadIdx.y;
+  const size_t myCol = blockDim.x * blockIdx.x + threadIdx.x;
+  if (myRow < m && myCol < m) {
+    c[INDX(myRow, myCol, m)] = a[INDX(myCol, myRow, m)];
   } /* end if */
   return;
 
@@ -66,8 +66,8 @@ void host_transpose(const int m, const double *const a, double *c) {
    *  naive matrix transpose goes here.
    */
 
-  for (int j = 0; j < m; j++) {
-    for (int i = 0; i < m; i++) {
+  for (size_t j = 0; j < m; ++j) {
+    for (size_t i = 0; i < m; ++i) {
       c[INDX(i, j, m)] = a[INDX(j, i, m)];
     } /* end for i */
   } /* end for j */
@@ -76,7 +76,7 @@ void host_transpose(const int m, const double *const a, double *c) {
 
 int main(int argc, char *argv[]) {
 
-  int size = SIZE;
+  const int size = SIZE;
 
   fprintf(stdout, "Matrix size is %d\n", size);
 
@@ -92,13 +92,13 @@ int main(int argc, char *argv[]) {
   h_a = (double *)malloc(numbytes);
   if (h_a == NULL) {
     fprintf(stderr, "Error in host malloc h_a\n");
-    return 911;
+    return -1;
   }
 
   h_c = (double *)malloc(numbytes);
   if (h_c == NULL) {
     fprintf(stderr, "Error in host malloc h_c\n");
-    return 911;
+    return -1;
   }
 
   /* allocating device memory */
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
   /* setup threadblock size and grid sizes */
 
   dim3 threads(THREADS_PER_BLOCK_X, THREADS_PER_BLOCK_Y, 1);
-  dim3 blocks(FIXME, FIXME, 1);
+  dim3 blocks(size, size, 1);
 
   /* start timers */
   CUDA_CALL(cudaEventRecord(start, 0));
