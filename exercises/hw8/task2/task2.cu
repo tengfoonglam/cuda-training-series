@@ -55,24 +55,26 @@ __global__ void smem_cuda_transpose(const int m, double const *const a,
 
   /* declare a shared memory array */
 
-  __shared__ double smemArray[FIXME][FIXME];
+  __shared__ double smemArray[THREADS_PER_BLOCK_X][THREADS_PER_BLOCK_Y];
 
   /* determine my row and column indices for the error checking code */
 
-  const int myRow = blockDim.x * blockIdx.x + threadIdx.x;
-  const int myCol = blockDim.y * blockIdx.y + threadIdx.y;
+  const size_t myRow = blockDim.x * blockIdx.x + threadIdx.x;
+  const size_t myCol = blockDim.y * blockIdx.y + threadIdx.y;
 
   /* determine my row tile and column tile index */
 
-  const int tileX = FIXME const int tileY = FIXME
+  const size_t tileX = blockDim.x * blockIdx.x;
+  const size_t tileY = blockDim.y * blockIdx.y;
 
-      if (myRow < m && myCol < m) {
+  if (myRow < m && myCol < m) {
     /* read to the shared mem array */
     /* HINT: threadIdx.x should appear somewhere in the first argument to */
     /* your INDX calculation for both a[] and c[].  This will ensure proper */
     /* coalescing. */
 
-    smemArray[FIXME][FIXME] = a[FIXME];
+    // Normal assigning of submatrix into shared memory
+    smemArray[threadIdx.x][threadIdx.y] = a[INDX(myRow, myCol, m)];
   } /* end if */
 
   /* synchronize */
@@ -80,7 +82,13 @@ __global__ void smem_cuda_transpose(const int m, double const *const a,
 
   if (myRow < m && myCol < m) {
     /* write the result */
-    c[FIXME] = smemArray[FIXME][FIXME];
+
+    // To ensure that the threadIdx.x is in the additive term of the index
+    // computation, Each thread is used to look up the transpose of the shared
+    // memory submatrix Hence we lookup the transposed tile but the
+    // non-transposed element in the shared memory submatrix
+    c[INDX(tileY + threadIdx.x, tileX + threadIdx.y, m)] =
+        smemArray[threadIdx.y][threadIdx.x];
   } /* end if */
   return;
 
@@ -118,13 +126,13 @@ int main(int argc, char *argv[]) {
   h_a = (double *)malloc(numbytes);
   if (h_a == NULL) {
     fprintf(stderr, "Error in host malloc h_a\n");
-    return 911;
+    return -1;
   }
 
   h_c = (double *)malloc(numbytes);
   if (h_c == NULL) {
     fprintf(stderr, "Error in host malloc h_c\n");
-    return 911;
+    return -1;
   }
 
   /* allocating device memory */
