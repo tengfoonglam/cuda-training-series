@@ -55,7 +55,7 @@ __global__ void smem_cuda_transpose(const int m, double const *const a,
 
   /* declare a shared memory array */
 
-  __shared__ double smemArray[THREADS_PER_BLOCK_X][THREADS_PER_BLOCK_Y];
+  __shared__ double smemArray[THREADS_PER_BLOCK_X][THREADS_PER_BLOCK_Y + 1];
 
   /* determine my row and column indices for the error checking code */
 
