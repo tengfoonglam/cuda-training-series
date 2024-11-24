@@ -7,10 +7,10 @@
 
 typedef int mytype;
 const int test_dsize = 256;
-
 const int nTPB = 256;
+static constexpr size_t kSharedMemUsed{0};
 
-template <typename T> __device__ unsigned predicate_test(T data, T testval) {
+template <typename T> __device__ size_t predicate_test(T data, T testval) {
   if (data == testval)
     return 0;
   return 1;
@@ -21,59 +21,64 @@ using namespace cooperative_groups;
 // assume dsize is divisbile by nTPB
 template <typename T>
 __global__ void my_remove_if(const T *__restrict__ idata, const T remove_val,
-                             T *__restrict__ odata, unsigned *__restrict__ idxs,
-                             const unsigned dsize) {
+                             T *__restrict__ odata, size_t *__restrict__ idxs,
+                             const size_t dsize) {
 
-  __shared__ unsigned sidxs[nTPB];
+  __shared__ size_t sidxs[nTPB];
   auto g = this_thread_block();
   auto gg = this_grid();
-  unsigned tidx = g.thread_rank();
-  unsigned gidx = tidx + nTPB * g.group_index().x;
-  unsigned gridSize = g.size() * gridDim.x;
+  size_t tidx = g.thread_rank();
+  size_t gidx = tidx + nTPB * g.group_index().x;
+  size_t gridSize = g.size() * gridDim.x;
+
   // first use grid-stride loop to have each block do a prefix sum over data set
-  for (unsigned i = gidx; i < dsize; i += gridSize) {
-    unsigned temp = predicate_test(idata[i], remove_val);
+  // Note: operation is done per block so we sync block-level
+  for (size_t i = gidx; i < dsize; i += gridSize) {
+    size_t temp = predicate_test(idata[i], remove_val);
     sidxs[tidx] = temp;
-    for (int j = 1; j < g.size(); j <<= 1) {
-      FIXME
+    for (size_t j = 1; j < g.size(); j <<= 1) {
+      g.sync();
       if (j <= tidx) {
         temp += sidxs[tidx - j];
       }
-      FIXME
+      g.sync();
       if (j <= tidx) {
         sidxs[tidx] = temp;
       }
     }
     idxs[i] = temp;
-    FIXME
+    g.sync();
   }
-  // grid-wide barrier
-  FIXME
+
+  // grid-wide barrier (sync all blocks)
+  gg.sync();
+
   // then compute final index, and move input data to output location
-  unsigned stride = 0;
-  for (unsigned i = gidx; i < dsize; i += gridSize) {
+  size_t stride = 0;
+  for (size_t i = gidx; i < dsize; i += gridSize) {
     T temp = idata[i];
     if (predicate_test(temp, remove_val)) {
-      unsigned my_idx = idxs[i];
-      for (unsigned j = 1; (j - 1) < (g.group_index().x + (stride * gridDim.x));
-           j++)
+      size_t my_idx = idxs[i];
+      for (size_t j = 1; (j - 1) < (g.group_index().x + (stride * gridDim.x));
+           ++j) {
         my_idx += idxs[j * nTPB - 1];
+      }
       odata[my_idx - 1] = temp;
     }
-    stride++;
+    ++stride;
   }
 }
 
 int main() {
   // data setup
   mytype *d_idata, *d_odata, *h_data;
-  unsigned *d_idxs;
+  size_t *d_idxs;
   size_t tsize = ((size_t)test_dsize) * sizeof(mytype);
   h_data = (mytype *)malloc(tsize);
   cudaMalloc(&d_idata, tsize);
   cudaMalloc(&d_odata, tsize);
   cudaMemset(d_odata, 0, tsize);
-  cudaMalloc(&d_idxs, test_dsize * sizeof(unsigned));
+  cudaMalloc(&d_idxs, test_dsize * sizeof(size_t));
   // check for support and device configuration
   // and calculate maximum grid size
   cudaDeviceProp prop;
@@ -87,42 +92,45 @@ int main() {
     return 0;
   }
   int numSM = prop.multiProcessorCount;
-  printf("number of SMs = %d\n", numSM);
+  printf("number of SMs = %u\n", numSM);
   int numBlkPerSM;
   cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlkPerSM,
                                                 my_remove_if<mytype>, nTPB, 0);
-  printf("number of blocks per SM = %d\n", numBlkPerSM);
+  printf("number of blocks per SM = %u\n", numBlkPerSM);
   // test 1: no remove values
-  for (int i = 0; i < test_dsize; i++)
+  for (size_t i = 0; i < test_dsize; ++i) {
     h_data[i] = i;
+  }
+
   cudaMemcpy(d_idata, h_data, tsize, cudaMemcpyHostToDevice);
   cudaStream_t str;
   cudaStreamCreate(&str);
   mytype remove_val = -1;
-  unsigned ds = test_dsize;
+  size_t ds = test_dsize;
   void *args[] = {(void *)&d_idata, (void *)&remove_val, (void *)&d_odata,
                   (void *)&d_idxs, (void *)&ds};
   dim3 grid(numBlkPerSM * numSM);
   dim3 block(nTPB);
-  cudaLaunchCooperativeKernel((void *)my_remove_if<mytype>, FIXME);
+  cudaLaunchCooperativeKernel((void *)my_remove_if<mytype>, grid, block, args,
+                              kSharedMemUsed, str);
   err = cudaMemcpy(h_data, d_odata, tsize, cudaMemcpyDeviceToHost);
   if (err != cudaSuccess) {
     printf("cuda error: %s\n", cudaGetErrorString(err));
     return 0;
   }
   // validate
-  for (int i = 0; i < test_dsize; i++)
+  for (size_t i = 0; i < test_dsize; ++i) {
     if (h_data[i] != i) {
-      printf("mismatch 1 at %d, was: %d, should be: %d\n", i, h_data[i], i);
+      printf("mismatch 1 at %zu, was: %d, should be: %zu\n", i, h_data[i], i);
       return 1;
     }
+  }
+
+  printf("No remove values test case succeeded");
   // test 2: with remove values
   int val = 0;
-  for (int i = 0; i < test_dsize; i++) {
-    if ((rand() / (float)RAND_MAX) > 0.5)
-      h_data[i] = val++;
-    else
-      h_data[i] = -1;
+  for (size_t i = 0; i < test_dsize; ++i) {
+    h_data[i] = ((rand() / (float)RAND_MAX) > 0.5) ? val++ : -1;
   }
   thrust::device_vector<mytype> t_data(h_data, h_data + test_dsize);
   cudaMemcpy(d_idata, h_data, tsize, cudaMemcpyHostToDevice);
@@ -130,30 +138,36 @@ int main() {
   cudaEventCreate(&start);
   cudaEventCreate(&stop);
   cudaEventRecord(start);
-  cudaLaunchCooperativeKernel((void *)my_remove_if<mytype>, FIXME);
+  cudaLaunchCooperativeKernel((void *)my_remove_if<mytype>, grid, block, args,
+                              kSharedMemUsed, str);
   cudaEventRecord(stop);
   float et;
   cudaMemcpy(h_data, d_odata, tsize, cudaMemcpyDeviceToHost);
   cudaEventElapsedTime(&et, start, stop);
   // validate
-  for (int i = 0; i < val; i++)
+  for (size_t i = 0; i < val; ++i) {
     if (h_data[i] != i) {
-      printf("mismatch 2 at %d, was: %d, should be: %d\n", i, h_data[i], i);
+      printf("mismatch 2 at %zu, was: %d, should be: %zu\n", i, h_data[i], i);
       return 1;
     }
+  }
+
   printf("kernel time: %fms\n", et);
   cudaEventRecord(start);
   thrust::remove(t_data.begin(), t_data.end(), -1);
   cudaEventRecord(stop);
   thrust::host_vector<mytype> th_data = t_data;
   // validate
-  for (int i = 0; i < val; i++)
+  for (size_t i = 0; i < val; ++i) {
     if (h_data[i] != th_data[i]) {
-      printf("mismatch 3 at %d, was: %d, should be: %d\n", i, th_data[i],
+      printf("mismatch 3 at %zu, was: %d, should be: %d\n", i, th_data[i],
              h_data[i]);
       return 1;
     }
+  }
+
   cudaEventElapsedTime(&et, start, stop);
   printf("thrust time: %fms\n", et);
+  printf("Remove values test case succeeded");
   return 0;
 }
