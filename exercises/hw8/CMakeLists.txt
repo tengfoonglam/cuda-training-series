@@ -7,6 +7,6 @@ if (POLICY CMP0104)
 endif()
 
 foreach(example_name task1 task2 task3)
-    add_executable("${example_name}" "${example_name}/${example_name}.cu")
-    add_executable("${example_name}_solution" "${example_name}/${example_name}_solution.cu")
+    add_executable("${example_name}_${PROJECT_NAME}" "${example_name}/${example_name}.cu")
+    add_executable("${example_name}_solution_${PROJECT_NAME}" "${example_name}/${example_name}_solution.cu")
 endforeach()
