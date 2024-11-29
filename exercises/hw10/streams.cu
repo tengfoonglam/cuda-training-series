@@ -97,6 +97,7 @@ int main() {
 
   unsigned long long et = dtime_usec(0);
 
+#pragma omp parallel for
   for (int i = 0; i < chunks; i++) { // depth-first launch
     cudaMemcpyAsync(d_x + i * (ds / chunks), h_x + i * (ds / chunks),
                     (ds / chunks) * sizeof(ft), cudaMemcpyHostToDevice,
