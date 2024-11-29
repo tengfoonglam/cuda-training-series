@@ -30,3 +30,16 @@ for (int i=0; i<N; i++){
     Kernel<<<b/N, t, 0, streams[j]>>>(…);
 } // execute across threads/streams/GPUs
 ```
+
+## HW 10 Notes
+
+Elapsed times where on the same order of magnitude, but streams was surprisingly faster, which was contrary to what the README stated.
+
+```
+non-stream elapsed time: 0.080624
+streams elapsed time: 0.04505
+```
+
+Similar to exercise 7, with streams, there is overlap between the three components (HtoD, kernel, DtoH) as compared to large individual processes with no streams.
+
+![Stream vs Non-Stream](./diagrams/openmp_streams.png)
