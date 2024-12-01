@@ -123,3 +123,10 @@ of MPS processes.
 | Error Isolation          | No             | No             | Yes         |
 | Cross-Partition Interop  | Always         | IPC            | Limited IPC |
 | Reconfigure              | Dynamic        | Process launch | When idle   |
+
+## HW 11 Notes
+
+Need to install MPI to successfully compile executable
+```shell
+sudo apt install mpich
+```
