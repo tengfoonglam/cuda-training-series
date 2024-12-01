@@ -60,10 +60,10 @@ int main(int argc, char **argv) {
 
   auto end = high_resolution_clock::now();
 
-  auto duration = duration_cast<milliseconds>(end - start);
+  auto duration = duration_cast<microseconds>(end - start);
 
   std::cout << "Time per kernel = " << duration.count() / (double)num_reps
-            << " ms " << std::endl;
+            << " us " << std::endl;
 
 #ifndef NO_MPI
   MPI_Finalize();

@@ -126,7 +126,75 @@ of MPS processes.
 
 ## HW 11 Notes
 
-Need to install MPI to successfully compile executable
+#### Setup
+
+1. Need to install MPI to successfully compile executable
 ```shell
 sudo apt install mpich
 ```
+
+2. Before running executable, set the following environment variable
+```shell
+export RDMAV_FORK_SAFE=1
+```
+
+If not, the following error message will appear and the terminal will hang
+
+```
+A process has executed an operation involving a call
+to the fork() system call to create a child process.
+
+As a result, the libfabric EFA provider is operating in
+a condition that could result in memory corruption or
+other system errors...
+```
+
+3. In the build folder, run the following commands according to the instructions in the original [README](./README.md)
+
+1 Rank execution
+```shell
+nsys profile --stats=true --show-output=true -t nvtx,cuda -s none -o 1_rank_no_MPS_N_1e9 -f true mpirun -np 1 ./exercises/hw11/test 1073741824
+```
+
+4 Rank execution
+```shell
+nsys profile --stats=true --show-output=true -t nvtx,cuda -s none -o 1_rank_no_MPS_N_1e9 -f true mpirun -np 4 ./exercises/hw11/test 1073741824
+```
+
+Turn on MPS
+```shell
+nvidia-cuda-mps-control -d
+```
+
+Turn off MPS
+```shell
+echo "quit" | nvidia-cuda-mps-control
+```
+
+#### Results
+
+
+1 Rank execution (without MPS)
+```
+Time per kernel = 4.297 us
+```
+
+4 Rank execution (without MPS)
+```
+Time per kernel = 11.958 us
+Time per kernel = 13.378 us
+Time per kernel = 59816.6 us
+Time per kernel = 59819.5 us
+```
+
+4 Rank execution (with MPS)
+```
+Time per kernel = 0.073 us
+Time per kernel = 0.065 us
+Time per kernel = 0.071 us
+Time per kernel = 0.102 us
+```
+
+As expected, without MPS, running with simple oversubscription underperforms running with a single thread. This is most likely from the performance overhead of the GPU switching between the various time slices of the different ranks.
+
+For my system, it seems that already at N=1073741824 running with MPS significantly outperforms both oversubscription and single process executable without MPS.
