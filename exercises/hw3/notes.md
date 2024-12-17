@@ -1,4 +1,4 @@
-# Lesson 3 Notes
+# Lesson 3 - Fundamental CUDA Optimization (Part 1)
 
 ## Execution Model
 

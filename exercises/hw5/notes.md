@@ -1,4 +1,4 @@
-# Lesson 5 Notes
+# Lesson 5 - Atomics, Reductions and Warp Shuffle
 
 ## Transformation Vs Reduction
 

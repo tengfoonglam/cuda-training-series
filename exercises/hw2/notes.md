@@ -1,4 +1,4 @@
-# Lesson 2 Notes
+# Lesson 2 - CUDA Shared Memory
 
 ## Shared memory
 

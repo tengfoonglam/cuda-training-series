@@ -1,4 +1,4 @@
-# Lesson 4 Notes
+# Lesson 4 - Fundamental CUDA Optimization (Part 2)
 
 ## Memory Heirarchy Overview
 

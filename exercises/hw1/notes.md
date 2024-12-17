@@ -1,4 +1,4 @@
-# Lesson 1 Notes
+# Lesson 1 - Introduction to CUDA C++
 
 **Host**: CPU and its memory
 **Device**: GPU and its memory
