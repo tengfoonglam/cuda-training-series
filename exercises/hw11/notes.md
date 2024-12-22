@@ -1,4 +1,4 @@
-# Lesson 11 Notes
+# Lesson 11 - CUDA Multi Process Service
 
 #### Terminology
 

@@ -1,5 +1,4 @@
-# Lesson 9 Notes
-
+# Lesson 9 - Coorperative Groups
 
 ## Coorperative Groups
 

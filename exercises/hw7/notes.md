@@ -1,4 +1,4 @@
-# Lesson 7 Notes
+# Lesson 7 - CUDA Concurrency
 
 ## Pinned (non-pageable) Memory
 - Pinned memory: Pin the data such that it cannot be moved down to the hard disk by the OS

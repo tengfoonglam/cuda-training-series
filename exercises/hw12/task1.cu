@@ -116,8 +116,10 @@ __global__ void MatMulKernel(Matrix A, Matrix B, Matrix C) {
     // before starting the computation
     __syncthreads();
     // Multiply Asub and Bsub together
-    for (int e = 0; e <= BLOCK_SIZE; ++e)
+    // Original erroneous code: for (int e = 0; e <= BLOCK_SIZE; ++e)
+    for (int e = 0; e < BLOCK_SIZE; ++e)
       Cvalue += As[row][e] * Bs[e][col];
+    __syncthreads(); // Additional sync to fix shared mem race conditions
   }
 
   // Write Csub to device memory

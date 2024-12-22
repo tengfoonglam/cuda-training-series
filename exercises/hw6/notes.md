@@ -1,4 +1,4 @@
-# Lesson 6 Notes
+# Lesson 6 - Managed Memory
 
 ## CUDA Unified Memory
 

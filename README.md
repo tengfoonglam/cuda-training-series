@@ -4,8 +4,8 @@ The materials in this repository accompany the CUDA Training Series presented at
 You can find the slides and presentation recordings [here](https://www.olcf.ornl.gov/cuda-training-series/)
 
 Each HW folder contains:
-- the completed exercises
 - **notes\.md** with a summary of the lecture material + tips/results for the exercise
+- the completed exercises
 
 ## Installing CUDA on Ubuntu
 
@@ -13,7 +13,9 @@ Each HW folder contains:
 - Install CMake: `sudo apt install cmake`
 
 In the event that you need to uninstall CUDA to install another version, run
-`sudo apt-get --allow-change-held-packages --purge remove "*cublas*" "cuda*" "nsight*"`
+```shell
+sudo apt-get --allow-change-held-packages --purge remove "*cublas*" "cuda*" "nsight*"
+```
 
 ## Build Instructions
 

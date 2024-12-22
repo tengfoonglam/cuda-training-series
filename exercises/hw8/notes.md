@@ -1,4 +1,4 @@
-# Lesson 8 Notes
+# Lesson 8 - GPU Performance Analysis
 
 ## Top-Level Performance Coding Objectives
 

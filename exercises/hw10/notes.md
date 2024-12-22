@@ -1,4 +1,4 @@
-# Lesson 10 Notes
+# Lesson 10 - CUDA Multithreading with Streams
 
 ## Multithreading + CUDA Streams
 
