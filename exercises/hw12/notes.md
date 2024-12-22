@@ -187,7 +187,6 @@ In the case that python segfaults due some  Python related error run
 cuda-gdb --disable-python ./exercises/hw12/task2_cuda_training_series_hw12
 ```
 
-
 ###### Debuging in CUDA GDB
 Once in cuda-gdb
 
