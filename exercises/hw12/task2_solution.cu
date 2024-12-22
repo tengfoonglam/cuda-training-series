@@ -3,10 +3,16 @@
 #include <cstdlib>
 #include <iostream>
 
+// Note: change to float from the original double since older CUDA versions do
+// no support double atomic adds
+typedef float ft;
+
 // alternating harmonic series:
 // https://en.wikipedia.org/wiki/Harmonic_series_(mathematics)#Alternating_harmonic_series
 // compute alternating harmonic series member based on index n
-__device__ auto ahs(size_t n) { return ((n & 1) ? 1 : -1) / (double)n; }
+__device__ auto ahs(size_t n) {
+  return ((n & 1) ? 1 : -1) / static_cast<ft>(n);
+}
 
 // blocksize must be a power of 2, less than or equal to 1024
 #define BLOCK_SIZE 512
@@ -29,8 +35,6 @@ template <typename T> __global__ void estimate_sum_ahs(size_t length, T *sum) {
     atomicAdd(sum, smem[0]);
 }
 
-typedef double ft;
-
 int main(int argc, char *argv[]) {
   size_t my_length = 1048576; // allow user to override default estimation
                               // length with command-line argument
@@ -51,7 +55,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Error: " << cudaGetErrorString(err) << std::endl;
     return 0;
   }
-  std::cout << "Estimated value: " << *sum << " Expected value: " << log(2)
+  std::cout << "Estimated value: " << *sum << " Expected value: " << logf(2)
             << std::endl;
   return 0;
 }

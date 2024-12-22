@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.22)
 project(cuda_training_series_hw6 LANGUAGES C CXX CUDA)
 
 # https://cmake.org/cmake/help/latest/policy/CMP0104.html
