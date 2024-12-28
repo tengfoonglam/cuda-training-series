@@ -112,5 +112,5 @@ launchWork(cudaGraphExec_t i1, cudaGraphExec_t i2,
 
 ## CUDA Graphs Benefits Summary
 - Rapid re-issue of work - Graphs can be generated once and executed repeatedly
-- Graph nodes include GPU work, CPU work and data movement
-- Can optimise for multi-device dependencies
+- Graph nodes include GPU work, CPU work and data movement (i.e. heterogeneous node types)
+- Can optimise for both multi-device and heterogeneous dependencies
