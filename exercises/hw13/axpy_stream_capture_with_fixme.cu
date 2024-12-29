@@ -94,7 +94,7 @@ int main() {
   cudaGraphExec_t instance;
 
   // FIXME
-  cudaGraphCreate(FIXME, 0);
+  cudaGraphCreate(&graph, 0);
 
   int threads = 512;
   int blocks = (N + (threads - 1) / threads);
@@ -135,15 +135,15 @@ int main() {
 
       // Creating the graph instance
       // FIXME
-      cudaGraphInstantiate(FIXME, graph, NULL, NULL, 0);
+      cudaGraphInstantiate(&instance, graph, NULL, NULL, 0);
       cudaCheckErrors("instantiating graph failed");
 
       // FIXME
-      graphCreated = FIXME;
+      graphCreated = true;
     }
     // Launch the graph instance
     // FIXME
-    cudaGraphLaunch(FIXME, streams[0]);
+    cudaGraphLaunch(instance, streams[0]);
     cudaCheckErrors("Launching graph failed");
     cudaStreamSynchronize(streams[0]);
   }

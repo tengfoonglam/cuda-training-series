@@ -77,14 +77,14 @@ int main() {
   int blocks = (N + (threads - 1) / threads);
 
   for (int i = 0; i < 100; ++i) {
-    kernel_a<<<blocks, thread, 0, stream1>>>(d_x, d_y)
+    kernel_a<<<blocks, threads, 0, stream1>>>(d_x, d_y);
 
-        // Library call
-        cublasSaxpy(cublas_handle, N, &d_a, d_x, 1, d_y, 1);
+    // Library call
+    cublasSaxpy(cublas_handle, N, &d_a, d_x, 1, d_y, 1);
 
-    kernel_a<<<blocks, thread, 0, stream1>>>(d_x, d_y)
+    kernel_a<<<blocks, threads, 0, stream1>>>(d_x, d_y);
 
-        cudaStreamSynchronize(stream1);
+    cudaStreamSynchronize(stream1);
   }
   cudaDeviceSynchronize();
 

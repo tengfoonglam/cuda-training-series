@@ -83,7 +83,7 @@ int main() {
   cudaKernelNodeParams kernelNode2Params{0};
 
   // FIXME need to create the graph
-  cudaGraphCreate(FIXME, 0); // create the graph
+  cudaGraphCreate(&graph, 0); // create the graph
   cudaCheckErrors("cudaGraphCreate failure");
 
   // kernel_a and kernel_c use same args
@@ -103,7 +103,7 @@ int main() {
   cudaGraphAddKernelNode(&kernelNode1, graph, NULL, 0, &kernelNode1Params);
   cudaCheckErrors("Adding kernelNode1 failed");
 
-  nodeDependencies.push_back(kernelNode1); // manage dependecy vector
+  nodeDependencies.push_back(kernelNode1); // manage dependency vector
 
   // Adding 2nd node, libraryNode, with kernelNode1 as dependency
   cudaStreamBeginCapture(stream1, cudaStreamCaptureModeGlobal);
@@ -117,8 +117,8 @@ int main() {
   cudaCheckErrors("Stream capture end failure");
 
   // FIXME need to fix the cudaGraphAddChildNode call
-  cudaGraphAddChildGraphNode(FIXME, graph, FIXME, nodeDependencies.size(),
-                             libraryGraph);
+  cudaGraphAddChildGraphNode(&libraryNode, graph, nodeDependencies.data(),
+                             nodeDependencies.size(), libraryGraph);
   cudaCheckErrors("Adding libraryNode failed");
 
   nodeDependencies.clear();
@@ -152,7 +152,7 @@ int main() {
   // Launch the graph instance 100 times
   for (int i = 0; i < 100; ++i) {
     // FIXME need to launch the graph
-    cudaGraphLaunch(FIXME, stream1);
+    cudaGraphLaunch(instance, stream1);
     cudaStreamSynchronize(stream1);
   }
   cudaCheckErrors("Graph launch failed");
