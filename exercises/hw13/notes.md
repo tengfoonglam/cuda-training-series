@@ -114,3 +114,11 @@ launchWork(cudaGraphExec_t i1, cudaGraphExec_t i2,
 - Rapid re-issue of work - Graphs can be generated once and executed repeatedly
 - Graph nodes include GPU work, CPU work and data movement (i.e. heterogeneous node types)
 - Can optimise for both multi-device and heterogeneous dependencies
+
+## HW 13 Notes
+
+For the axpy stream capture example:
+- With CUDA graphs: 8.92593s
+- Without CUDA graphs: 9.10846s
+
+CUDA graphs implementation has a marginal improvement compared to the implementation without it (at least on my system).
