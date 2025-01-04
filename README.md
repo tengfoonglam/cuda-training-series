@@ -9,7 +9,7 @@ Original exercise repository can be found [here](https://github.com/olcf/cuda-tr
 
 Besides the original contents, each HW folder contains:
 - the completed exercises
-- **notes\.md** with my personal summary of the lecture material + tips/results for the exercise the completed exercises
+- **notes\.md** with my personal summary of the lecture material + tips/results for the exercise
 
 **DISCLAIMER**: This is my own attempt at the course so there may be undiscovered mistakes in the code/explanations.
 
