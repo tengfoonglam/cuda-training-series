@@ -30,12 +30,12 @@ As a reference, these are the system specifications that worked for me:
 - CUDA: 11.8
 - CMake: 3.22.1
 
-## Things that I did that Deferred from the Original Course
+## Things that I Did that Deferred from the Original Course
 
 - Most of the profiling is done using Nvidia Visual Profiler instead of Nvidia NSight Compute as my GPU does not support NSight Compute.
 - HW 10 has an exercise on multi-GPU, skipped as I do not have access to such as setup.
 
-## Getting Nvidia Visual Profiler to work
+## Getting Nvidia Visual Profiler to Work
 
 Try to run the command `nvvp`
 
@@ -67,7 +67,7 @@ This repository uses [pre-commit hooks](https://pre-commit.com/) to ensure that 
 * Install pre-commit: `sudo apt install pre-commit`
 * Update pre-commit version to prevent this error `Type tag 'textproto' is not recognized`: `pip install --force-reinstall -U pre-commit`
 
-#### Running the hooks
+#### Running the Hooks
 
 * Run hooks on every commit: `pre-commit install`
 * Running the hooks manually: `pre-commit run --all`
