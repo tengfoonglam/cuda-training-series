@@ -33,7 +33,7 @@
 - Place kernels and memcopy into different streams
 
 Example:
-```
+```C++
 cudaStream_t stream1, stream2;
 cudaStreamCreate(&stream1);
 cudaStreamCreate(&stream2);
@@ -48,7 +48,6 @@ kernel<<<grid, block, 0, stream2>>>(...);
 cudaStreamQuery(stream1); // test if stream is idle
 cudaStreamSynchronize(stream2); // force CPU thread to wait
 cudaStreamDestroy(stream2);
-
 ```
 
 ## Default Stream
@@ -80,7 +79,7 @@ cudaStreamDestroy(stream2);
   - Arranging complex concurrency scenarios
 
 Example:
-```
+```C++
 cudaEvent_t start, stop; // cudaEvent has its own type
 cudaEventCreate(&start); // cudaEvent must be created
 cudaEventCreate(&stop); // before use
@@ -110,7 +109,7 @@ cudaEventElapsedTime(&float_var, start, stop); // measure Kernel duration
 - `cudaStreamWaitEvent` can synchronize streams belonging to separate devices, `cudaEventQuery` can test if an event is “complete”
 
 Example:
-```
+```C++
 cudaSetDevice(0);
 cudaStreamCreate(&stream0); //associated with device 0
 cudaSetDevice(1);
@@ -127,7 +126,7 @@ Kernel<<<b, t, 0, stream0>>>(…); // to execute concurrently
 - Thereafter, memory copies between those two devices will not “stage” through a system memory buffer (GPUDirect P2P transfer)
 
 Example:
-```
+```C++
 cudaSetDevice(0);
 cudaDeviceCanAccessPeer(&canPeer, 0, 1); // test for 0, 1 peerable
 cudaDeviceEnablePeerAccess(1, 0); // device 0 sees device 1 as a “peer”
@@ -164,7 +163,7 @@ Kernel<<<b, t, 0, streamB>>>(…); // to execute concurrently
 - Current implementation only has 2 priorities
 - Current implementation does not cause preemption of blocks
 
-```
+```C++
 // get the range of stream priorities for this device
 int priority_high, priority_low;
 cudaDeviceGetStreamPriorityRange(&priority_low, &priority_high);
