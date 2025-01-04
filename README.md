@@ -2,7 +2,7 @@
 
 The material in this repository accompany the CUDA Training Series presented at ORNL and NERSC.
 
-This is my personal attempt on the course exercises with complementary notes. As the original readme instructions require the student to run the exercises on NERSC's Cori GPU nodes, I provide the necessary CMakeLists/instructions to compile/run all exercise on a local laptop with a GPU installed.
+This is my personal attempt on the course exercises with complementary notes. As the original readme instructions require the student to run the exercises on NERSC's Cori GPU nodes, I provide the necessary CMakeLists/instructions to compile/run all exercise on a local laptop with a GPU installed. Pre-commit hooks have also been added to enforce consistent code/text formatting.
 
 You can find the slides and presentation recordings [here](https://www.olcf.ornl.gov/cuda-training-series/).
 Original exercise repository can be found [here](https://github.com/olcf/cuda-training-series).
@@ -10,9 +10,8 @@ Original exercise repository can be found [here](https://github.com/olcf/cuda-tr
 Besides the original contents, each HW folder contains:
 - the completed exercises
 - **notes\.md** with my personal summary of the lecture material + tips/results for the exercise the completed exercises
-- **original** folder with uncompleted exercises in case you would like to try it yourself
 
-**DISCLAIMER**: This is my attempt at the course so there may be undiscovered mistakes in the code/explanations.
+**DISCLAIMER**: This is my own attempt at the course so there may be undiscovered mistakes in the code/explanations.
 
 ## Installing CUDA on Ubuntu
 
