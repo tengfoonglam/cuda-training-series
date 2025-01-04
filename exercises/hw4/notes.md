@@ -3,19 +3,23 @@
 ## Memory Heirarchy Overview
 
 #### Local storage
+
 - Each thread has its own local storage
 - Typically registers (managed by the compiler)
 
 #### Shared memory / L1
+
 - Program configurable - typically up to 48KB shared
 - Shared memory is accessible by threads in the same threadblock
 - Very low latency
 - Very high throughput: >1 TB/s
 
 #### L2
+
 - All access to global memory go through L2, including copies to/from CPU host
 
 #### Global memory (GMEM)
+
 - Accessible by all threads as well as host (CPU)
 - High latency (hundreds of cycles)
 - Throughput: up to 900 GB/s

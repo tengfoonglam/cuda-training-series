@@ -1,6 +1,7 @@
 # Lesson 7 - CUDA Concurrency
 
 ## Pinned (non-pageable) Memory
+
 - Pinned memory: Pin the data such that it cannot be moved down to the hard disk by the OS
 - All memory that is to be copied to the GPU is pinned to the CPU
 - Pageable memory: memory contents that can be paged in/out between DRAM and secondary storage device
@@ -10,11 +11,13 @@
   - `cudaHostRegister` / `cudaHostUnregister`: Pin regular memory already allocated with `malloc`
 
 ## Default CUDA API
+
 - Kernel launches are asynchronous with CPU
 - All CUDA calls are performed using a single default stream
 - `cudaMemcpy` (D2H, H2D) block CPU thread
 
 ## Streams and Async Functionalities
+
 - Streams: Sequence of operations that execute in issue-order on GPU
   - Operations from different streams can run concurrently
   - A kernel and memcopy from different streams may be interleaved
@@ -23,10 +26,12 @@
 - Concurrent copies in both directions (D2H, H2D) possible on most GPUs
 
 ## Stream Semantics
+
 1. Two operations issued into the same stream will execute in issueorder. Operation B issued after Operation A will not begin to execute until Operation A has completed.
 2. Two operations issued into separate streams have no ordering prescribed by CUDA. Operation A issued into stream 1 may execute before, during, or after Operation B issued into stream 2.
 
 ## Stream Creation and Copy/Compute Overlap
+
 - Use `async` variants of CUDA calls where you can specify the stream to use
   - As opposed to the standard API which does
 - Kernels can take in a 4th argument in its triple chevron syntax to specify the stream to use
@@ -93,6 +98,7 @@ cudaEventElapsedTime(&float_var, start, stop); // measure Kernel duration
 ## Multi-GPU: Device Management
 
 #### Working with multiple GPUs
+
 - Application can query and select GPUs
   - `cudaGetDeviceCount(int *count)`
   - `cudaSetDevice(int device)`
@@ -103,6 +109,7 @@ cudaEventElapsedTime(&float_var, start, stop); // measure Kernel duration
   - `cudaSetDevice` to set the current device to be used for the subsequent instructions
 
 #### Streams with Multi-GPU
+
 - Streams (and cudaEvent) have implicit/automatic device association
 - Each device also has its own unique default stream
 - Kernel launches will fail if issued into a stream not associated with current device
@@ -120,6 +127,7 @@ Kernel<<<b, t, 0, stream0>>>(…); // to execute concurrently
 ```
 
 #### Device-to-Device Data Copying
+
 - If system topology supports it, data can be copied directly from one device to another over a fabric (PCIE, or NVLink)
 - Device must first be explicitly placed into a peer relationship (“clique”)
 - Must enable “peering” for both directions of transfer (if needed)
@@ -139,7 +147,8 @@ cudaDeviceDisablePeerAccess(0); // dev 0 is no longer a peer of dev 1
 ## Other Concurrency Scenarios
 
 #### Host/Device execution concurrency
-```
+
+```C++
 Kernel<<<b, t>>>(…); // this kernel execution can overlap with
 cpuFunction(…); // this host code
 ```
@@ -151,12 +160,13 @@ cpuFunction(…); // this host code
 - Less efficient than saturating the device with a single kernel
 - Best performance is still usually running a kernel at completely saturates the GPU instead of concurrent kernels
 
-```
+```C++
 Kernel<<<b, t, 0, streamA>>>(…); // these kernels have the possibility
 Kernel<<<b, t, 0, streamB>>>(…); // to execute concurrently
 ```
 
 ## Stream Priority
+
 - CUDA streams allow an optional definition of a priority
 - This affects execution of concurrent kernels (only)
 - The GPU block scheduler will attempt to schedule blocks from high priority (stream) kernels before blocks from low priority (stream) kernels

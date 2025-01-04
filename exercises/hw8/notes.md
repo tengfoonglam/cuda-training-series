@@ -127,6 +127,7 @@ Shared Efficiency: 100%
 - Adding an additional column reduced bank conflicts
 
 ###### Explanation of Bank Conflicts
+
 Sources [here](https://developer.nvidia.com/blog/using-shared-memory-cuda-cc/) and [here](https://stackoverflow.com/questions/15056842/when-is-padding-for-shared-memory-really-required)
 
 To achieve high memory bandwidth for concurrent accesses, shared memory is divided into equally sized memory modules (banks) that can be accessed simultaneously. Therefore, any memory load or store of n addresses that spans b distinct memory banks can be serviced simultaneously, yielding an effective bandwidth that is b times as high as the bandwidth of a single bank.
