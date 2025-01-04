@@ -4,6 +4,7 @@
 **Device**: GPU and its memory
 
 ## CUDA key functionality
+
  - Use GPU to parallelize compute-intensive functions and CPU to perform rest of the sequential code
  - PCIe or NVLink Bus is used to transfer data from CPU to/from GPU
 
@@ -36,11 +37,13 @@ Execute N times in separate blocks (in parallel), each block with M threads
 
 With M threads per block, a unique index for each thread is given by
 
-```int index = threadIdx.x + blockIdx.x * blockDim.x;```
+```C++
+int index = threadIdx.x + blockIdx.x * blockDim.x;
+```
 
 In the event that the number of jobs is not a friendly multiple of blockDim.x
 
-```
+```C++
 #define N (2048*2048)
 #define THREADS_PER_BLOCK 512
 

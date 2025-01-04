@@ -45,15 +45,9 @@ subsystem or the memory subsystem has been saturated
 
 ## HW 3 Notes
 
+Refer the root README on how to launch Nvidia Visual Profiler.
+
 To perform the profiling, use Nvidia Visual Profiler
-
-If Nvidia Visual Profiler does not run properly, apply the following fix [here](https://askubuntu.com/questions/1472456/cannot-open-nvidia-visualizer-profilernvvp)
-
-Install OpenJDK
-`sudo apt install openjdk-8-jdk`
-
-Then run
-`nvvp -vm /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java`
 
 Results for the ***vadd*** operation
 

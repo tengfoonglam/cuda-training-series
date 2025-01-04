@@ -15,7 +15,7 @@
 
 **Static**
 
-```
+```C++
 const int size = 48;
 
 __global__ void k(...)
@@ -30,7 +30,7 @@ k<<<grid, block>>>(...);
 
 Need to provide third argument to kernel launch
 
-```
+```C++
 __global__ void k(..., int shared_size_in_bytes)
 {
     __shared__ int temp[];

@@ -3,6 +3,7 @@
 ## CUDA Graphs Introduction
 
 #### Definition of a CUDA Graph
+
 - A graph node is any asynchronous CUDA operation: A sequence of operations, connected by dependencies
 - Operations include:
   - Kernel launch: GPU kernel
@@ -12,10 +13,12 @@
   - Sub-graphs: Graphs are heirarchical
 
 #### Features
+
 - Graphs can be generated once then launched repeatedly
 - Graph launch submits all work at once, reducing CPU costs, as compared to launching multiple kernels separately
 
 #### Three-Stage Execution Model
+
 1. **Define** - Single graph "template": created in host code/loaded from disk/built up from libraries
 2. **Instantiate** - Multiple "executable graphs":
     - snapshot of template
@@ -24,6 +27,7 @@
 3. **Execute** - Executbale graphs running in CUDA streams: Concurrency in graph is not limited by stream
 
 #### Modifying Graphs In-Place
+
 |                      | Parameters     | Kernel Topology |
 | ---------------------| -------------- | --------------- |
 | Normal Stream Launch | May change     | May change      |
@@ -31,12 +35,14 @@
 | Graph Re-Launch      | May not change | May not change  |
 
 #### Additional Points
+
 - User must define execution location (e.g. which GPU for multiple-gpu devices) for each node
 - Edges represent execution dependencies and not data dependencies
 
 ## Methods of Programming CUDA Graphs
 
 #### Stream Capture
+
 - Records operations without actually launching a kernel
 - All operations need to be asynchronous any any calls to `cudaStreamSynchronize()` or any other synchronous operation will cause the capture operation to fail
 - Also records kernel calls by external library functions
@@ -60,6 +66,7 @@ cudaStreamEndCapture(stream1, &graph);
 ```
 
 #### Create Graphs Directly
+
 - Refer to CUDA API for documentation
 
 Example
@@ -96,6 +103,7 @@ cudaGraphAddNode(main_graph, Z, { Y }, ...);
 ```
 
 #### Inserting Non-Graph CUDA Work between Graphs
+
 - Possible as long as you can run the CUDA work in a stream
 - Note: stream used to launch the kernels/graphs only used to order the work, work might still run on different streams than the launch stream
 
@@ -111,6 +119,7 @@ launchWork(cudaGraphExec_t i1, cudaGraphExec_t i2,
 ```
 
 ## CUDA Graphs Benefits Summary
+
 - Rapid re-issue of work - Graphs can be generated once and executed repeatedly
 - Graph nodes include GPU work, CPU work and data movement (i.e. heterogeneous node types)
 - Can optimise for both multi-device and heterogeneous dependencies
