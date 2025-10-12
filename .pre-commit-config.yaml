@@ -2,18 +2,32 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.3.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
-    -   id: check-case-conflict
-    -   id: check-merge-conflict
-    -   id: check-symlinks
-    -   id: debug-statements
-    -   id: mixed-line-ending
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-yaml
+    - id: check-added-large-files
+    - id: check-case-conflict
+    - id: check-merge-conflict
+    - id: check-symlinks
+    - id: debug-statements
+    - id: mixed-line-ending
 -  repo: https://github.com/pre-commit/mirrors-clang-format
    rev: v18.1.8
    hooks:
-   -    id: clang-format
+   - id: clang-format
+-  repo: https://github.com/cmake-lint/cmake-lint
+   rev: 1.4.2
+   hooks:
+    - id: cmakelint
+      args: ["--filter=-whitespace/indent,-readability/wonkycase"]
+-  repo: https://github.com/cheshirekow/cmake-format-precommit
+   rev: v0.6.10
+   hooks:
+    - id: cmake-format
+      args: ["-c", "./cmake_format_config.py", "--in-place", "--log-level", "error"]
+-  repo: https://github.com/comkieffer/pre-commit-xmllint.git
+   rev: 1.0.0
+   hooks:
+    - id: xmllint
