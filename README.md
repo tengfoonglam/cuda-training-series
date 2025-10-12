@@ -71,3 +71,8 @@ This repository uses [pre-commit hooks](https://pre-commit.com/) to ensure that 
 
 * Run hooks on every commit: `pre-commit install`
 * Running the hooks manually: `pre-commit run --all`
+
+
+- Find some way to install pre-commit hook on terminal
+- Change env var `PRE_COMMIT_HOME` to point to hook folder (in .bashrc)
+- In computer with internet and similar env to offline one, `./pre-commit-4.0.0.pyz install-hooks`
