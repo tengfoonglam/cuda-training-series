@@ -1,2 +1,3 @@
 .vscode/
 build/
+pre_commit_hooks/**
